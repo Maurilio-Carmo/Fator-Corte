@@ -1,0 +1,263 @@
+/* ============================================================
+   theme.css — Dark Theme, Decorative Touches, Animations
+   ============================================================ */
+
+/* ---- Background texture ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(193,127,36,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(193,127,36,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Header glow accent ---- */
+.site-header {
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-surface) 0%,
+    #3a1f0c 50%,
+    var(--color-bg-elevated) 100%
+  );
+}
+
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-amber) 20%,
+    var(--color-amber-bright) 50%,
+    var(--color-amber) 80%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+
+/* ---- Brand title amber gradient ---- */
+.header-brand h1,
+.app-title {
+  background: linear-gradient(
+    135deg,
+    var(--color-amber-light) 0%,
+    var(--color-amber-bright) 40%,
+    var(--color-cream) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+/* ---- Card hover accent ---- */
+.summary-card:hover::before {
+  background: linear-gradient(
+    90deg,
+    var(--color-amber) 0%,
+    var(--color-amber-glow) 50%,
+    var(--color-amber) 100%
+  );
+  opacity: 1;
+}
+
+/* ---- Animated amber pulse on add-cut button ---- */
+@keyframes amber-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(193,127,36,0.4); }
+  70%  { box-shadow: 0 0 0 8px rgba(193,127,36,0); }
+  100% { box-shadow: 0 0 0 0 rgba(193,127,36,0); }
+}
+
+.btn-add-cut {
+  animation: amber-pulse 2.5s infinite;
+}
+
+.btn-add-cut:hover {
+  animation: none;
+}
+
+/* ---- Fade-in for new cut rows ---- */
+@keyframes fade-in-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cut-row-animated {
+  animation: fade-in-slide 200ms ease forwards;
+}
+
+/* ---- Table row highlight on hover ---- */
+.data-table tbody tr:hover td {
+  color: var(--color-cream);
+}
+
+.data-table tbody tr:hover td.col-fr {
+  background: #122030;
+}
+
+.data-table tbody tr:hover td.col-fc {
+  background: #3d2400;
+}
+
+/* ---- Summary card value glow ---- */
+.summary-card-value {
+  text-shadow: 0 0 20px rgba(212,146,42,0.3);
+}
+
+/* ---- Section title decorative line ---- */
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 1em;
+  background: linear-gradient(to bottom, var(--color-amber), var(--color-amber-light));
+  border-radius: var(--radius-full);
+  margin-right: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ---- Input focus glow ---- */
+.form-input:focus {
+  box-shadow:
+    0 0 0 3px rgba(193, 127, 36, 0.2),
+    inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ---- Card amber accent border on hover ---- */
+.card:hover {
+  border-color: var(--color-amber-dark);
+  box-shadow: var(--shadow-lg), var(--shadow-amber);
+}
+
+/* ---- Status dot indicator ---- */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.status-dot.green  { background: var(--color-success-text); box-shadow: 0 0 6px var(--color-success-text); }
+.status-dot.yellow { background: var(--color-warning-text); box-shadow: 0 0 6px var(--color-warning-text); }
+.status-dot.red    { background: var(--color-danger-text);  box-shadow: 0 0 6px var(--color-danger-text);  }
+
+/* ---- Alert danger animation ---- */
+@keyframes alert-shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px); }
+  75%       { transform: translateX(4px); }
+}
+
+.alert-bar.alert-danger.animate {
+  animation: alert-shake 0.4s ease;
+}
+
+/* ---- Waste percent bar ---- */
+.waste-bar-track {
+  height: 6px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-2);
+}
+
+.waste-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow), background-color var(--transition-normal);
+  background: var(--color-success-text);
+}
+
+.waste-bar-fill.warning {
+  background: var(--color-warning-text);
+}
+
+.waste-bar-fill.danger {
+  background: var(--color-danger-text);
+}
+
+/* ---- Table FR header accent ---- */
+.data-table th.col-fr {
+  color: var(--color-fr-text);
+  text-shadow: 0 0 12px rgba(144, 202, 249, 0.4);
+}
+
+.data-table th.col-fc {
+  color: var(--color-fc-text);
+  text-shadow: 0 0 12px rgba(255, 204, 128, 0.4);
+}
+
+/* ---- Logo decoration ---- */
+.header-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* ---- Scrollbar amber thumb on focus ---- */
+.table-wrapper:focus-within::-webkit-scrollbar-thumb {
+  background: var(--color-amber);
+}
+
+/* ---- Print styles ---- */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .column-left,
+  .btn,
+  .site-footer {
+    display: none !important;
+  }
+
+  .two-column-layout {
+    display: block;
+  }
+
+  .full-width-section {
+    page-break-inside: avoid;
+  }
+
+  .data-table thead th,
+  .data-table tbody td {
+    border: 1px solid #ccc;
+    color: #000;
+    background: #fff;
+  }
+
+  .summary-card {
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    break-inside: avoid;
+  }
+
+  .summary-card-value {
+    color: #000;
+    text-shadow: none;
+  }
+}

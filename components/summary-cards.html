@@ -1,0 +1,86 @@
+<!-- ============================================================
+     summary-cards.html — Summary cards fragment
+     ============================================================ -->
+<section class="section" aria-labelledby="summary-section-title">
+  <div class="section-header">
+    <h2 class="section-title" id="summary-section-title">
+      <span class="section-title-icon" aria-hidden="true">📋</span>
+      Resumo
+    </h2>
+  </div>
+
+  <div class="summary-grid" role="list">
+
+    <!-- Card 1: Cortes / Descarte / Quebra -->
+    <article class="summary-card" role="listitem" aria-label="Total de cortes e descarte">
+      <div class="summary-card-header">
+        <span class="summary-card-label">Total Cortes</span>
+        <span class="summary-card-icon" aria-hidden="true">🥩</span>
+      </div>
+      <div class="summary-card-value" id="sum-total-cuts" aria-live="polite">0.000 kg</div>
+      <div class="summary-card-sub">
+        <div class="summary-card-sub-item">
+          <span class="summary-card-sub-label">Descarte</span>
+          <span class="summary-card-sub-value" id="sum-descarte">0.000 kg</span>
+        </div>
+        <div class="summary-card-sub-item">
+          <span class="summary-card-sub-label">% Quebra</span>
+          <span class="summary-card-sub-value" id="sum-quebra">0.0%</span>
+        </div>
+        <div class="waste-bar-track" aria-hidden="true">
+          <div class="waste-bar-fill" id="sum-quebra-bar" style="width: 0%"></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 2: Custo Total -->
+    <article class="summary-card" role="listitem" aria-label="Custo total da carcaça">
+      <div class="summary-card-header">
+        <span class="summary-card-label">Custo Total</span>
+        <span class="summary-card-icon" aria-hidden="true">💰</span>
+      </div>
+      <div class="summary-card-value" id="sum-custo-total" aria-live="polite">R$ 0,00</div>
+      <div class="summary-card-sub">
+        <div class="summary-card-sub-item">
+          <span class="summary-card-sub-label">Custo de aquisição da carcaça</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 3: Faturamento / Resultado Líquido -->
+    <article class="summary-card" role="listitem" aria-label="Faturamento e resultado líquido">
+      <div class="summary-card-header">
+        <span class="summary-card-label">Faturamento Total</span>
+        <span class="summary-card-icon" aria-hidden="true">📈</span>
+      </div>
+      <div class="summary-card-value" id="sum-fat-total" aria-live="polite">R$ 0,00</div>
+      <div class="summary-card-sub">
+        <div class="summary-card-sub-item">
+          <span class="summary-card-sub-label">Resultado Líquido</span>
+          <span class="summary-card-sub-value" id="sum-result-liq" aria-live="polite">R$ 0,00</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 4: Margem Média -->
+    <article class="summary-card" role="listitem" aria-label="Margem média dos cortes">
+      <div class="summary-card-header">
+        <span class="summary-card-label">Margem Média</span>
+        <span class="summary-card-icon" aria-hidden="true">📉</span>
+      </div>
+      <div class="summary-card-value" id="sum-margem-media" aria-live="polite">0.0%</div>
+      <div class="summary-card-sub">
+        <div class="summary-card-sub-item">
+          <span class="summary-card-sub-label">Status</span>
+          <span
+            class="status-dot"
+            id="sum-margem-status"
+            aria-label="Sem dados"
+            title="Indicador de margem média"
+          ></span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>

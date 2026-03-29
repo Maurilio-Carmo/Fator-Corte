@@ -1,0 +1,56 @@
+<!-- ============================================================
+     carcass-form.html — Carcass input form fragment
+     ============================================================ -->
+<section class="card section" aria-labelledby="carcass-form-title">
+  <div class="card-header">
+    <span class="card-icon" aria-hidden="true">⚖️</span>
+    <h2 class="card-title" id="carcass-form-title">Dados da Carcaça</h2>
+  </div>
+
+  <form id="carcass-form" novalidate>
+    <div class="form-row">
+      <!-- Carcass weight -->
+      <div class="form-group">
+        <label class="form-label form-label-required" for="carcass-weight">
+          Peso da Carcaça
+        </label>
+        <div class="input-group">
+          <input
+            type="number"
+            id="carcass-weight"
+            class="form-input"
+            placeholder="0.000"
+            min="0"
+            step="0.001"
+            inputmode="decimal"
+            aria-describedby="carcass-weight-hint"
+          />
+          <span class="input-suffix">kg</span>
+        </div>
+        <span class="form-hint" id="carcass-weight-hint">Peso total da carcaça em kg</span>
+      </div>
+
+      <!-- Price per kg -->
+      <div class="form-group">
+        <label class="form-label form-label-required" for="carcass-price">
+          Preço de Compra
+        </label>
+        <div class="input-group">
+          <span class="input-prefix">R$</span>
+          <input
+            type="number"
+            id="carcass-price"
+            class="form-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            aria-describedby="carcass-price-hint"
+          />
+          <span class="input-suffix">/kg</span>
+        </div>
+        <span class="form-hint" id="carcass-price-hint">Preço pago por kg da carcaça</span>
+      </div>
+    </div>
+  </form>
+</section>
