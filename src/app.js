@@ -62,3 +62,10 @@ bootstrap().catch((err) => {
   console.error('Bootstrap failed:', err);
   document.getElementById('app').textContent = 'Erro ao carregar a aplicação.';
 });
+
+/* ---- Service Worker ---- */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch((err) => {
+    console.warn('Service Worker não registrado:', err);
+  });
+}
