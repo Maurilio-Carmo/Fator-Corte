@@ -15,6 +15,9 @@ export class AppController {
     /** @type {Cut[]} */
     this._cuts = [];
 
+    /** @type {number} - decimal, e.g. 0.30 for 30% */
+    this._targetMargin = 0.30;
+
     /** @type {AppView} */
     this._view = new AppView(this);
   }
@@ -77,9 +80,10 @@ export class AppController {
      ============================================================ */
 
   _bindCarcassForm() {
-    const weightInput = document.getElementById('carcass-weight');
-    const priceInput  = document.getElementById('carcass-price');
-    const addCutBtn   = document.getElementById('add-cut-btn');
+    const weightInput  = document.getElementById('carcass-weight');
+    const priceInput   = document.getElementById('carcass-price');
+    const marginInput  = document.getElementById('target-margin');
+    const addCutBtn    = document.getElementById('add-cut-btn');
 
     if (weightInput) {
       weightInput.addEventListener('input', (e) => {
@@ -90,6 +94,14 @@ export class AppController {
     if (priceInput) {
       priceInput.addEventListener('input', (e) => {
         this.updateCarcass('pricePerKg', parseFloat(e.target.value) || 0);
+      });
+    }
+
+    if (marginInput) {
+      marginInput.addEventListener('input', (e) => {
+        const pct = parseFloat(e.target.value);
+        this._targetMargin = (pct > 0 && pct < 100) ? pct / 100 : 0.30;
+        this._recalculate();
       });
     }
 
@@ -108,10 +120,11 @@ export class AppController {
   _recalculate() {
     const { cutResults, summary } = CalculationService.calculate(
       this._carcass,
-      this._cuts
+      this._cuts,
+      this._targetMargin
     );
 
-    this._view.renderTable(cutResults);
+    this._view.renderTable(cutResults, this._targetMargin);
     this._view.renderSummary(summary);
     this._view.renderWasteAlert(summary.wastePercent);
   }

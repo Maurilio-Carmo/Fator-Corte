@@ -162,10 +162,17 @@ export class AppView {
      ============================================================ */
 
   /**
-   * Renders the full factors table body.
+   * Renders the full factors table body and updates the dynamic column header.
    * @param {import('../services/CalculationService.js').CutResult[]} results
+   * @param {number} [targetMargin=0.30]
    */
-  renderTable(results) {
+  renderTable(results, targetMargin = 0.30) {
+    const thMinPrice = document.getElementById('th-min-price');
+    if (thMinPrice) {
+      const pct = Math.round(targetMargin * 100);
+      thMinPrice.textContent = `Preço Mín ${pct}%`;
+      thMinPrice.title = `Preço mínimo de venda para atingir ${pct}% de margem`;
+    }
     // Clear existing data rows (keep empty row as reference)
     const dataRows = this._tableBodyEl.querySelectorAll('tr:not(#table-empty-row)');
     dataRows.forEach((r) => r.remove());
@@ -189,7 +196,7 @@ export class AppView {
    * @returns {HTMLTableRowElement}
    */
   _createTableRow(result) {
-    const { cut, fr, frNorm, fc, realCostPerKg, grossRevenue, margin, minPrice30, priceDiff } = result;
+    const { cut, fr, frNorm, fc, realCostPerKg, grossRevenue, margin, minPriceTarget, priceDiff } = result;
 
     const tr = document.createElement('tr');
 
@@ -200,22 +207,18 @@ export class AppView {
       }),
       // Peso (kg)
       this._createTd(formatWeight(cut.weight)),
-      // FR Carcaça
-      this._createTd(formatFactor(fr), 'col-fr', (td) => {
-        td.setAttribute('data-tooltip', `${(fr * 100).toFixed(2)}% da carcaça`);
-      }),
-      // FR Carne Útil
-      this._createTd(formatFactor(frNorm), 'col-fr', (td) => {
+      // FR Carne Útil — secundário no mobile
+      this._createTd(formatFactor(frNorm), 'col-fr col-secondary', (td) => {
         td.setAttribute('data-tooltip', `${(frNorm * 100).toFixed(2)}% da carne útil`);
       }),
-      // Fator de Custo (FC)
-      this._createTd(formatFactor(fc), 'col-fc', (td) => {
+      // Fator de Custo (FC) — secundário no mobile
+      this._createTd(formatFactor(fc), 'col-fc col-secondary', (td) => {
         td.setAttribute('data-tooltip', 'Quanto esse corte custa relativamente aos demais');
       }),
-      // Custo Real/kg
-      this._createTd(formatCurrency(realCostPerKg), 'col-fc'),
-      // Faturamento Bruto
-      this._createTd(formatCurrency(grossRevenue)),
+      // Custo Real/kg — secundário no mobile
+      this._createTd(formatCurrency(realCostPerKg), 'col-fc col-secondary'),
+      // Faturamento Bruto — secundário no mobile
+      this._createTd(formatCurrency(grossRevenue), 'col-secondary'),
       // Margem %
       this._createTd(null, null, (td) => {
         const status = CalculationService.marginStatus(margin);
@@ -224,8 +227,8 @@ export class AppView {
         badge.textContent = formatPercent(margin);
         td.appendChild(badge);
       }),
-      // Preço Mín 30%
-      this._createTd(formatCurrency(minPrice30)),
+      // Preço Mín (margem alvo)
+      this._createTd(formatCurrency(minPriceTarget)),
       // Dif. Preço
       this._createTd(null, null, (td) => {
         const status = CalculationService.priceDiffStatus(priceDiff);
