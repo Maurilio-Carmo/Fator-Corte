@@ -115,8 +115,23 @@ export class AppController {
 
     if (marginInput) {
       marginInput.addEventListener('input', (e) => {
-        const pct = parseFloat(e.target.value);
-        this._targetMargin = (pct >= 0.01 && pct <= 99.99) ? pct / 100 : 0.30;
+        let raw = e.target.value;
+
+        // Limita a 2 casas decimais
+        const dot = raw.indexOf('.');
+        if (dot !== -1 && raw.length - dot > 3) {
+          raw = raw.slice(0, dot + 3);
+          e.target.value = raw;
+        }
+
+        // Clamp ao máximo 99.99
+        const pct = parseFloat(raw);
+        if (!isNaN(pct) && pct > 99.99) {
+          e.target.value = '99.99';
+        }
+
+        const final = parseFloat(e.target.value);
+        this._targetMargin = (final >= 0.01 && final <= 99.99) ? final / 100 : 0.30;
         this._recalculate();
       });
     }
