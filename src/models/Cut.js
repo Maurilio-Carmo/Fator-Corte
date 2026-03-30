@@ -10,7 +10,11 @@ export class Cut {
    * @param {number} [params.salePrice] - Sale price per kg in R$
    */
   constructor({ id, name = '', weight = 0, salePrice = 0 } = {}) {
-    this.id = id ?? crypto.randomUUID();
+    this.id = id ?? (
+      typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36)
+    );
     this.name = name;
     this.weight = weight;
     this.salePrice = salePrice;
