@@ -23,8 +23,8 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="target-margin">
-          Margem Alvo
+        <label class="form-label form-label-required" for="target-margin">
+          Margem Desejada
         </label>
         <div class="input-group">
           <input
@@ -32,15 +32,16 @@
             id="target-margin"
             class="form-input"
             value="30"
-            min="1"
-            max="99"
-            step="1"
+            min="0.01"
+            max="99.99"
+            step="0.01"
             inputmode="decimal"
+            required
             aria-describedby="target-margin-hint"
           />
           <span class="input-suffix">%</span>
         </div>
-        <span class="form-hint" id="target-margin-hint">Margem de lucro desejada</span>
+        <span class="form-hint" id="target-margin-hint">Margem de lucro desejada (máx. 99,99%)</span>
       </div>
 
       <div class="form-group">
