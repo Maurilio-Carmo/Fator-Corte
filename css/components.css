@@ -240,11 +240,11 @@
   border-color: var(--color-amber);
 }
 
-/* Form row for inline fields */
+/* Form row for inline fields — 3 equal columns on desktop */
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
 }
 
 /* Cut row labels */
@@ -433,6 +433,18 @@
 
 .data-table tbody tr:last-child {
   border-bottom: none;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.data-table tbody tr:nth-child(even) td.col-fr {
+  background: rgba(13, 31, 45, 0.85);
+}
+
+.data-table tbody tr:nth-child(even) td.col-fc {
+  background: rgba(45, 26, 0, 0.85);
 }
 
 .data-table tbody tr:hover {
@@ -626,6 +638,26 @@
 .font-bold    { font-weight: var(--font-bold); }
 .font-semibold { font-weight: var(--font-semibold); }
 .hidden       { display: none !important; }
+
+/* Colunas secundárias da tabela — ocultas em telas pequenas */
+@media (max-width: 768px) {
+  .col-secondary {
+    display: none;
+  }
+}
+
+/* form-row mobile: Peso + Preço lado a lado; Margem ocupa linha inteira */
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .form-row > .form-group:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
