@@ -1,69 +1,53 @@
-<!-- ============================================================
-     cuts-table.html — Factors table fragment
-     ============================================================ -->
 <section class="full-width-section section" aria-labelledby="table-section-title">
   <div class="section-header">
-    <h2 class="section-title" id="table-section-title">
-      <span class="section-title-icon" aria-hidden="true">📊</span>
-      Tabela de Fatores
-    </h2>
+    <h2 class="section-title" id="table-section-title">Tabela de Fatores</h2>
     <span class="text-muted text-sm">Atualização em tempo real</span>
   </div>
 
-  <!-- Waste alert bar -->
-  <div
-    id="waste-alert"
-    class="alert-bar alert-danger hidden"
-    role="alert"
-    aria-live="polite"
-  >
+  <div id="waste-alert" class="alert-bar alert-danger hidden" role="alert" aria-live="polite">
     <span class="alert-icon" aria-hidden="true">⚠️</span>
     <span id="waste-alert-message">Quebra acima do limite recomendado de 22%.</span>
   </div>
 
   <div class="table-wrapper">
-    <table class="data-table" aria-label="Tabela de fatores de corte">
+    <table class="data-table" aria-label="Tabela de fatores de corte bovino">
       <thead>
         <tr>
           <th scope="col">Corte</th>
           <th scope="col">Peso (kg)</th>
-          <th scope="col" class="col-fr"
-              title="Fator de Rendimento — relação entre o peso do corte e o peso total da carcaça">
-            FR Carcaça
-          </th>
-          <th scope="col" class="col-fr"
-              title="Fator de Rendimento Normalizado — relação entre o peso do corte e o peso total de carne útil">
+          <th scope="col" class="col-fr col-secondary"
+              title="FR Normalizado — relação entre o peso do corte e o total de carne útil">
             FR Carne Útil
           </th>
-          <th scope="col" class="col-fc"
+          <th scope="col" class="col-fc col-secondary"
               title="Fator de Custo — reflete a escassez relativa de cada corte">
             Fator de Custo
           </th>
-          <th scope="col" class="col-fc"
-              title="Custo real por kg considerando o fator de custo">
+          <th scope="col" class="col-fc col-secondary"
+              title="Custo real por kg considerando o Fator de Custo">
             Custo Real/kg
           </th>
-          <th scope="col"
-              title="Faturamento bruto: peso do corte × preço de venda">
+          <th scope="col" class="col-secondary"
+              title="Faturamento bruto: peso × preço de venda">
             Fat. Bruto
           </th>
           <th scope="col"
-              title="Margem de lucro sobre o faturamento bruto">
+              title="Margem de lucro líquida sobre o faturamento">
             Margem %
           </th>
-          <th scope="col"
-              title="Preço mínimo de venda para atingir 30% de margem">
+          <th scope="col" id="th-min-price"
+              title="Preço mínimo de venda para atingir a margem alvo">
             Preço Mín 30%
           </th>
           <th scope="col"
-              title="Diferença entre o preço de venda atual e o preço mínimo para 30%">
+              title="Diferença entre preço de venda atual e o preço mínimo para a margem alvo">
             Dif. Preço
           </th>
         </tr>
       </thead>
       <tbody id="table-body">
         <tr id="table-empty-row" class="table-empty-row">
-          <td colspan="10">
+          <td colspan="9">
             Nenhum corte cadastrado — adicione cortes na coluna à esquerda para visualizar os fatores
           </td>
         </tr>

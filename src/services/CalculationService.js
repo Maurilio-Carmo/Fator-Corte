@@ -2,10 +2,13 @@
  * CalculationService.js — All business logic calculations for the cutting factor app.
  *
  * Nomenclature used throughout:
- *   FR  = Fator de Rendimento (yield factor = cut weight / carcass weight)
- *   FC  = Fator de Custo (cost factor reflecting relative scarcity of each cut)
- *   FRnorm = Normalized FR (FR / totalFR)
- *   FRmedio = Average FR per cut (totalFR / numberOfCuts)
+ *   FR       = Fator de Rendimento (yield factor = cut weight / carcass weight)
+ *   FC       = Fator de Custo efetivo = FC_escassez + FC_descarte
+ *   FC_esc   = Parcela de escassez: FRmedio / FR  (cortes escassos pagam mais por kg)
+ *   FC_desc  = Parcela de descarte: wasteWeight / sumCutWeights (flat por kg; em R$
+ *              totais os cortes mais pesados/baratos absorvem mais do descarte)
+ *   FRnorm   = Normalized FR (FR / totalFR)
+ *   FRmedio  = Average FR per cut (totalFR / numberOfCuts)
  */
 export class CalculationService {
   /**
@@ -13,9 +16,10 @@ export class CalculationService {
    *
    * @param {import('../models/Carcass.js').Carcass} carcass
    * @param {import('../models/Cut.js').Cut[]}       cuts
+   * @param {number} [targetMargin=0.30]  - decimal, e.g. 0.30 for 30%
    * @returns {{ cutResults: CutResult[], summary: Summary }}
    */
-  static calculate(carcass, cuts) {
+  static calculate(carcass, cuts, targetMargin = 0.30) {
     const { weight: carcassWeight, pricePerKg } = carcass;
 
     // Only process cuts that have a positive weight
@@ -41,6 +45,11 @@ export class CalculationService {
     const numberOfCuts = validCuts.length;
     const frMedio = numberOfCuts > 0 ? totalFR / numberOfCuts : 0;
 
+    // 8. FC_descarte: custo do descarte distribuído uniformemente por kg de carne útil.
+    //    Em R$ totais, cortes mais pesados (baratos) absorvem proporcionalmente mais.
+    //    Garante que sum(proportionalCost) == totalCost.
+    const fcDescarte = sumCutWeights > 0 ? wasteWeight / sumCutWeights : 0;
+
     // Build per-cut results
     const cutResults = validCuts.map((cut, i) => {
       const fr = frValues[i];
@@ -48,8 +57,11 @@ export class CalculationService {
       // 6. FRnorm = FR / totalFR
       const frNorm = totalFR > 0 ? fr / totalFR : 0;
 
-      // 8. FC = FRmedio / FR
-      const fc = fr > 0 ? frMedio / fr : 0;
+      // FC_escassez = FRmedio / FR  (cortes escassos têm FC alto)
+      const fcEscassez = fr > 0 ? frMedio / fr : 0;
+
+      // FC efetivo = escassez + descarte (descarte é flat; pesa mais em peso × R$)
+      const fc = fcEscassez + fcDescarte;
 
       // 9. realCostPerKg = pricePerKg × FC
       const realCostPerKg = pricePerKg * fc;
@@ -65,11 +77,11 @@ export class CalculationService {
         ? (grossRevenue - proportionalCost) / grossRevenue
         : 0;
 
-      // 13. minPrice30 = realCostPerKg / 0.70  (price needed for 30% margin)
-      const minPrice30 = realCostPerKg / 0.70;
+      // 13. minPriceTarget = realCostPerKg / (1 - targetMargin)
+      const minPriceTarget = targetMargin < 1 ? realCostPerKg / (1 - targetMargin) : 0;
 
-      // 14. priceDiff = salePrice - minPrice30
-      const priceDiff = cut.salePrice - minPrice30;
+      // 14. priceDiff = salePrice - minPriceTarget
+      const priceDiff = cut.salePrice - minPriceTarget;
 
       return {
         cut,
@@ -80,7 +92,7 @@ export class CalculationService {
         proportionalCost,
         grossRevenue,
         margin,
-        minPrice30,
+        minPriceTarget,
         priceDiff,
       };
     });
@@ -104,6 +116,7 @@ export class CalculationService {
       totalRevenue,
       netResult,
       averageMargin,
+      targetMargin,
     };
 
     return { cutResults, summary };
@@ -149,7 +162,7 @@ export class CalculationService {
  * @property {number} proportionalCost - Custo proporcional total do corte
  * @property {number} grossRevenue      - Faturamento bruto do corte
  * @property {number} margin            - Margem de lucro (decimal)
- * @property {number} minPrice30        - Preço mínimo para 30% de margem
+ * @property {number} minPriceTarget    - Preço mínimo para atingir a margem alvo
  * @property {number} priceDiff         - Diferença entre preço de venda e preço mínimo
  */
 
