@@ -1,3 +1,4 @@
+/* css/components.css */
 /* ============================================================
    components.css — Cards, Tables, Buttons, Forms
    ============================================================ */
@@ -179,6 +180,19 @@
   color: var(--color-text-disabled);
 }
 
+select.form-input {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+}
+
+select.form-input option {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+}
+
 .form-input-sm {
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
@@ -240,10 +254,10 @@
   border-color: var(--color-amber);
 }
 
-/* Form row for inline fields — 3 equal columns on desktop */
+/* Form row for inline fields — 2 equal columns, auto rows */
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
 }
 
@@ -646,17 +660,7 @@
   }
 }
 
-/* form-row mobile: Peso + Preço lado a lado; Margem ocupa linha inteira */
-@media (max-width: 480px) {
-  .form-row {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-  }
-
-  .form-row > .form-group:last-child {
-    grid-column: 1 / -1;
-  }
-}
+/* form-row mantém 2 colunas em todos os tamanhos */
 
 .sr-only {
   position: absolute;

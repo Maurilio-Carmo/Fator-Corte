@@ -1,3 +1,4 @@
+// src/controllers/AppController.js
 /**
  * AppController.js — MVC Controller. Owns application state and orchestrates
  * model updates and view re-renders via CalculationService.
@@ -8,7 +9,13 @@ import { CalculationService } from '../services/CalculationService.js';
 import { AppView }            from '../views/AppView.js';
 
 export class AppController {
-  constructor() {
+  /**
+   * @param {Record<string, string[]>} cutsByType - Cortes padrão por tipo de carcaça
+   */
+  constructor(cutsByType = {}) {
+    /** @type {Record<string, string[]>} */
+    this._cutsByType = cutsByType;
+
     /** @type {Carcass} */
     this._carcass = new Carcass({ weight: 0, pricePerKg: 0 });
 
@@ -80,10 +87,19 @@ export class AppController {
      ============================================================ */
 
   _bindCarcassForm() {
+    const typeSelect   = document.getElementById('carcass-type');
     const weightInput  = document.getElementById('carcass-weight');
     const priceInput   = document.getElementById('carcass-price');
     const marginInput  = document.getElementById('target-margin');
     const addCutBtn    = document.getElementById('add-cut-btn');
+
+    if (typeSelect) {
+      typeSelect.addEventListener('change', (e) => {
+        const type = e.target.value;
+        this.updateCarcass('type', type);
+        this._loadDefaultCuts(type);
+      });
+    }
 
     if (weightInput) {
       weightInput.addEventListener('input', (e) => {
@@ -108,6 +124,39 @@ export class AppController {
     if (addCutBtn) {
       addCutBtn.addEventListener('click', () => this.addCut());
     }
+  }
+
+  /* ============================================================
+     PRIVATE — DEFAULT CUTS LOADING
+     ============================================================ */
+
+  /**
+   * Replaces the current cuts with the defaults for the given type
+   * and updates the datalist autocomplete suggestions.
+   * @param {string} type
+   */
+  _loadDefaultCuts(type) {
+    const names = this._cutsByType[type] ?? [];
+    this._cuts = names.map((name) => new Cut({ name }));
+    this._updateDatalist(type);
+    this._renderAll();
+  }
+
+  /**
+   * Updates the autocomplete datalist to show only cuts for the given type.
+   * @param {string} type
+   */
+  _updateDatalist(type) {
+    const datalist = document.getElementById('cuts-suggestions');
+    if (!datalist) return;
+    const names = this._cutsByType[type] ?? [];
+    datalist.replaceChildren(
+      ...names.map((name) => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        return opt;
+      })
+    );
   }
 
   /* ============================================================

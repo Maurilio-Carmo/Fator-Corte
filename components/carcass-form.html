@@ -1,3 +1,4 @@
+<!-- components/carcass-form.html -->
 <section class="card section" aria-labelledby="carcass-form-title">
   <div class="card-header">
     <span class="card-icon" aria-hidden="true">⚖️</span>
@@ -6,6 +7,41 @@
 
   <form id="carcass-form" novalidate>
     <div class="form-row">
+
+      <div class="form-group">
+        <label class="form-label form-label-required" for="carcass-type">
+          Tipo de Carcaça
+        </label>
+        <select id="carcass-type" class="form-input" aria-describedby="carcass-type-hint">
+          <option value="" disabled selected>Selecione</option>
+          <option value="traseiro">Traseiro</option>
+          <option value="dianteiro">Dianteiro</option>
+          <option value="ponta-de-agulha">Ponta de Agulha</option>
+          <option value="suinos">Suínos</option>
+        </select>
+        <span class="form-hint" id="carcass-type-hint">Tipo de corte da carcaça</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="target-margin">
+          Margem Alvo
+        </label>
+        <div class="input-group">
+          <input
+            type="number"
+            id="target-margin"
+            class="form-input"
+            value="30"
+            min="1"
+            max="99"
+            step="1"
+            inputmode="decimal"
+            aria-describedby="target-margin-hint"
+          />
+          <span class="input-suffix">%</span>
+        </div>
+        <span class="form-hint" id="target-margin-hint">Margem de lucro desejada</span>
+      </div>
 
       <div class="form-group">
         <label class="form-label form-label-required" for="carcass-weight">
@@ -29,7 +65,7 @@
 
       <div class="form-group">
         <label class="form-label form-label-required" for="carcass-price">
-          Preço de Compra
+          Preço de Compra/kg
         </label>
         <div class="input-group">
           <span class="input-prefix">R$</span>
@@ -43,30 +79,8 @@
             inputmode="decimal"
             aria-describedby="carcass-price-hint"
           />
-          <span class="input-suffix">/kg</span>
         </div>
         <span class="form-hint" id="carcass-price-hint">Preço pago por kg da carcaça</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="target-margin">
-          Margem Alvo
-        </label>
-        <div class="input-group">
-          <input
-            type="number"
-            id="target-margin"
-            class="form-input"
-            value="30"
-            min="1"
-            max="99"
-            step="1"
-            inputmode="decimal"
-            aria-describedby="target-margin-hint"
-          />
-          <span class="input-suffix">%</span>
-        </div>
-        <span class="form-hint" id="target-margin-hint">Margem de lucro desejada nos cortes</span>
       </div>
 
     </div>

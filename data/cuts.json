@@ -1,0 +1,38 @@
+{
+  "traseiro": [
+    "Filé Mignon",
+    "Contra-filé",
+    "Alcatra",
+    "Coxão Mole",
+    "Coxão Duro",
+    "Patinho",
+    "Lagarto",
+    "Capa e Aba",
+    "Músculo",
+    "Retalhos (Moída)"
+  ],
+  "dianteiro": [
+    "Acém",
+    "Pescoço",
+    "Cupim",
+    "Peito",
+    "Paleta",
+    "Músculo Dianteiro",
+    "Retalhos Dianteiro"
+  ],
+  "ponta-de-agulha": [
+    "Costela",
+    "Fraudinha",
+    "Moída"
+  ],
+  "suinos": [
+    "Pernil",
+    "Lombo",
+    "Costela Suína",
+    "Paleta Suína",
+    "Barriga",
+    "Copa",
+    "Filé de Lombo",
+    "Retalhos Suíno"
+  ]
+}
