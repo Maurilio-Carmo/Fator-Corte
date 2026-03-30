@@ -1,3 +1,4 @@
+// src/views/AppView.js
 /**
  * AppView.js — MVC View layer. All DOM rendering and UI updates.
  *
