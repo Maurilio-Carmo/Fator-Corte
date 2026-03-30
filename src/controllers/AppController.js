@@ -116,7 +116,7 @@ export class AppController {
     if (marginInput) {
       marginInput.addEventListener('input', (e) => {
         const pct = parseFloat(e.target.value);
-        this._targetMargin = (pct > 0 && pct < 100) ? pct / 100 : 0.30;
+        this._targetMargin = (pct >= 0.01 && pct <= 99.99) ? pct / 100 : 0.30;
         this._recalculate();
       });
     }
