@@ -1,3 +1,4 @@
+// src/utils/formatters.js
 /**
  * formatters.js — Number, currency, and percentage formatting helpers.
  * All formatters use pt-BR locale conventions.

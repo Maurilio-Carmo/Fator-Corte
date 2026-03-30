@@ -1,3 +1,4 @@
+// src/services/CalculationService.js
 /**
  * CalculationService.js — All business logic calculations for the cutting factor app.
  *
