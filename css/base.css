@@ -199,6 +199,7 @@ button {
   background: none;
   font: inherit;
   color: inherit;
+  touch-action: manipulation; /* elimina delay de 300ms no mobile */
 }
 
 /* Input reset */

@@ -88,6 +88,15 @@ body::before {
   animation: none;
 }
 
+@media (max-width: 768px) {
+  .btn-add-cut {
+    animation: none; /* animação contínua interfere com touch events */
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-sm);
+    min-height: 44px; /* área mínima de toque recomendada */
+  }
+}
+
 /* ---- Fade-in for new cut rows ---- */
 @keyframes fade-in-slide {
   from {
