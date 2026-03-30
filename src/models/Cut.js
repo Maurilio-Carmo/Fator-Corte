@@ -1,3 +1,4 @@
+// src/models/Cut.js
 /**
  * Cut.js — Model representing a single beef cut derived from a carcass.
  */

@@ -1,3 +1,4 @@
+// src/app.js
 /**
  * app.js — Entry point. Loads HTML components, builds layout, bootstraps MVC.
  */
@@ -7,6 +8,12 @@ async function fetchHTML(path) {
   const res = await fetch(path);
   if (!res.ok) throw new Error(`Failed to load component: ${path}`);
   return res.text();
+}
+
+async function fetchJSON(path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`Failed to load data: ${path}`);
+  return res.json();
 }
 
 async function bootstrap() {
@@ -46,7 +53,8 @@ async function bootstrap() {
   app.insertAdjacentHTML('beforeend', await fetchHTML('components/footer.html'));
 
   // ---- Bootstrap MVC (all DOM elements now exist) ----
-  const controller = new AppController();
+  const cutsByType = await fetchJSON('data/cuts.json');
+  const controller = new AppController(cutsByType);
   controller.init();
 }
 
