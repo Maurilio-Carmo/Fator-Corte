@@ -37,9 +37,11 @@
 }
 
 .header-icon {
-  font-size: 2.5rem;
-  line-height: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   filter: drop-shadow(0 0 8px rgba(193,127,36,0.5));
+  flex-shrink: 0;
 }
 
 .header-titles {
