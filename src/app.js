@@ -29,9 +29,6 @@ async function bootstrap() {
   main.id = 'main';
   main.setAttribute('role', 'main');
 
-  const twoCol = document.createElement('div');
-  twoCol.className = 'two-column-layout';
-
   const colLeft = document.createElement('div');
   colLeft.className = 'column-left';
   colLeft.insertAdjacentHTML('beforeend', await fetchHTML('components/carcass-form.html'));
@@ -40,11 +37,10 @@ async function bootstrap() {
   const colRight = document.createElement('div');
   colRight.className = 'column-right';
   colRight.insertAdjacentHTML('beforeend', await fetchHTML('components/summary-cards.html'));
-  colRight.insertAdjacentHTML('beforeend', await fetchHTML('components/cuts-table.html'));
 
-  twoCol.appendChild(colLeft);
-  twoCol.appendChild(colRight);
-  main.appendChild(twoCol);
+  main.appendChild(colLeft);
+  main.appendChild(colRight);
+  main.insertAdjacentHTML('beforeend', await fetchHTML('components/cuts-table.html'));
 
   app.appendChild(main);
 
