@@ -216,15 +216,6 @@ body::before {
   text-shadow: 0 0 12px rgba(255, 204, 128, 0.4);
 }
 
-/* ---- Logo decoration ---- */
-.header-icon {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-4px); }
-}
 
 /* ---- Scrollbar amber thumb on focus ---- */
 .table-wrapper:focus-within::-webkit-scrollbar-thumb {
