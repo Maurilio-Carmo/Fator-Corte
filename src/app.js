@@ -1,19 +1,56 @@
 /**
- * app.js — Entry point. Bootstraps the MVC application when the DOM is ready.
+ * app.js — Entry point. Loads HTML components, builds layout, bootstraps MVC.
  */
 import { AppController } from './controllers/AppController.js';
 
-/**
- * Bootstrap function — instantiates the controller and starts the app.
- */
-function bootstrap() {
+async function fetchHTML(path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`Failed to load component: ${path}`);
+  return res.text();
+}
+
+async function bootstrap() {
+  const app = document.getElementById('app');
+  app.className = 'page-wrapper';
+
+  // ---- Header ----
+  app.insertAdjacentHTML('beforeend', await fetchHTML('components/header.html'));
+
+  // ---- Main ----
+  const main = document.createElement('main');
+  main.className = 'main-content';
+  main.id = 'main';
+  main.setAttribute('role', 'main');
+
+  const twoCol = document.createElement('div');
+  twoCol.className = 'two-column-layout';
+
+  const colLeft = document.createElement('div');
+  colLeft.className = 'column-left';
+  colLeft.insertAdjacentHTML('beforeend', await fetchHTML('components/carcass-form.html'));
+  colLeft.insertAdjacentHTML('beforeend', await fetchHTML('components/cuts-list.html'));
+
+  const colRight = document.createElement('div');
+  colRight.className = 'column-right';
+  colRight.insertAdjacentHTML('beforeend', await fetchHTML('components/summary-cards.html'));
+
+  twoCol.appendChild(colLeft);
+  twoCol.appendChild(colRight);
+  main.appendChild(twoCol);
+
+  main.insertAdjacentHTML('beforeend', await fetchHTML('components/cuts-table.html'));
+
+  app.appendChild(main);
+
+  // ---- Footer ----
+  app.insertAdjacentHTML('beforeend', await fetchHTML('components/footer.html'));
+
+  // ---- Bootstrap MVC (all DOM elements now exist) ----
   const controller = new AppController();
   controller.init();
 }
 
-// Wait for DOM to be fully parsed before bootstrapping
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootstrap);
-} else {
-  bootstrap();
-}
+bootstrap().catch((err) => {
+  console.error('Bootstrap failed:', err);
+  document.getElementById('app').textContent = 'Erro ao carregar a aplicação.';
+});
