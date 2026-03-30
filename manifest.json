@@ -1,0 +1,42 @@
+{
+  "id": "/",
+  "name": "Fator de Corte",
+  "short_name": "Fator Corte",
+  "description": "Calculadora de rendimento e custo para açougue — fator de corte por tipo de carcaça.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a0f08",
+  "theme_color": "#c17f24",
+  "categories": ["business", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "label": "Tela principal — Fator de Corte",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova Carcaça",
+      "short_name": "Nova",
+      "description": "Abre o formulário de nova carcaça",
+      "url": "./"
+    }
+  ]
+}
