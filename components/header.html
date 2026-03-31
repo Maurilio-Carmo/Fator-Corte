@@ -8,9 +8,31 @@
         <p class="header-tagline">Calculadora de Rendimento e Custo</p>
       </div>
     </div>
-    <div class="header-meta">
-      <span class="badge badge-amber">Bovino</span>
-      <span class="text-muted text-sm">v1.0</span>
+    <div class="header-actions">
+      <button
+        id="settings-btn"
+        type="button"
+        class="btn btn-ghost btn-icon settings-btn"
+        aria-label="Configurações"
+        aria-expanded="false"
+        aria-controls="settings-panel"
+      ></button>
+      <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="Configurações">
+        <div class="settings-group">
+          <span class="settings-label">Cálculo do preço mínimo</span>
+          <div class="toggle-group" role="group">
+            <button type="button" class="toggle-opt active" data-setting="priceMode" data-value="margin">Margem</button>
+            <button type="button" class="toggle-opt" data-setting="priceMode" data-value="markup">Markup</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <span class="settings-label">Distribuição de custo</span>
+          <div class="toggle-group" role="group">
+            <button type="button" class="toggle-opt active" data-setting="costMode" data-value="scarcity">Por escassez</button>
+            <button type="button" class="toggle-opt" data-setting="costMode" data-value="equal">Igualitária</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </header>

@@ -1,79 +1,48 @@
 // src/controllers/AppController.js
-/**
- * AppController.js — MVC Controller. Owns application state and orchestrates
- * model updates and view re-renders via CalculationService.
- */
+// Controlador MVC: gerencia o estado da aplicação e coordena modelo e visão.
 import { Carcass }            from '../models/Carcass.js';
 import { Cut }                from '../models/Cut.js';
 import { CalculationService } from '../services/CalculationService.js';
 import { AppView }            from '../views/AppView.js';
 
 export class AppController {
-  /**
-   * @param {Record<string, string[]>} cutsByType - Cortes padrão por tipo de carcaça
-   */
   constructor(cutsByType = {}) {
-    /** @type {Record<string, string[]>} */
-    this._cutsByType = cutsByType;
-
-    /** @type {Carcass} */
-    this._carcass = new Carcass({ weight: 0, pricePerKg: 0 });
-
-    /** @type {Cut[]} */
-    this._cuts = [];
-
-    /** @type {number} - decimal, e.g. 0.30 for 30% */
+    this._cutsByType   = cutsByType;
+    this._carcass      = new Carcass({ weight: 0, pricePerKg: 0 });
+    this._cuts         = [];
     this._targetMargin = 0.30;
-
-    /** @type {AppView} */
-    this._view = new AppView(this);
+    this._settings     = this._loadSettings();
+    this._view         = new AppView(this);
   }
 
-  /**
-   * Initializes the controller — binds carcass form events and performs
-   * an initial render to populate the UI with empty/zero state.
-   */
   init() {
     this._bindCarcassForm();
     this._renderAll();
   }
 
   /* ============================================================
-     PUBLIC API (called by AppView event handlers)
+     API PÚBLICA
      ============================================================ */
 
-  /**
-   * Updates a field on the carcass and triggers recalculation.
-   * @param {'weight' | 'pricePerKg'} field
-   * @param {number} value
-   */
   updateCarcass(field, value) {
     this._carcass[field] = value;
     this._recalculate();
   }
 
-  /**
-   * Adds a new empty Cut to the list and triggers recalculation.
-   */
   addCut() {
     this._cuts.push(new Cut());
     this._renderAll();
   }
 
-  /**
-   * Removes the Cut with the given id and triggers recalculation.
-   * @param {string} id
-   */
   removeCut(id) {
     this._cuts = this._cuts.filter((c) => c.id !== id);
     this._renderAll();
   }
 
   /**
-   * Updates a field on the Cut identified by id and triggers recalculation.
-   * @param {string}                        id
-   * @param {'name' | 'weight' | 'salePrice'} field
-   * @param {string | number}               value
+   * @param {string}                                           id
+   * @param {'name'|'weight'|'salePrice'|'isSubproduct'}      field
+   * @param {string|number|boolean}                            value
    */
   updateCut(id, field, value) {
     const cut = this._cuts.find((c) => c.id === id);
@@ -82,36 +51,36 @@ export class AppController {
     this._recalculate();
   }
 
+  // Marca todos como retalho se algum não for; desmarca todos se todos já forem.
+  toggleAllSubproduct() {
+    const allAre = this._cuts.every((c) => c.isSubproduct);
+    this._cuts.forEach((c) => { c.isSubproduct = !allAre; });
+    this._renderAll();
+  }
+
   /* ============================================================
-     PRIVATE — CARCASS FORM BINDING
+     VINCULAÇÃO DO FORMULÁRIO
      ============================================================ */
 
   _bindCarcassForm() {
-    const typeSelect   = document.getElementById('carcass-type');
-    const weightInput  = document.getElementById('carcass-weight');
-    const priceInput   = document.getElementById('carcass-price');
-    const marginInput  = document.getElementById('target-margin');
-    const addCutBtn    = document.getElementById('add-cut-btn');
+    const typeSelect  = document.getElementById('carcass-type');
+    const weightInput = document.getElementById('carcass-weight');
+    const priceInput  = document.getElementById('carcass-price');
+    const marginInput = document.getElementById('target-margin');
+    const addCutBtn   = document.getElementById('add-cut-btn');
 
-    if (typeSelect) {
-      typeSelect.addEventListener('change', (e) => {
-        const type = e.target.value;
-        this.updateCarcass('type', type);
-        this._loadDefaultCuts(type);
-      });
-    }
+    typeSelect?.addEventListener('change', (e) => {
+      this.updateCarcass('type', e.target.value);
+      this._loadDefaultCuts(e.target.value);
+    });
 
-    if (weightInput) {
-      weightInput.addEventListener('input', (e) => {
-        this.updateCarcass('weight', parseFloat(e.target.value) || 0);
-      });
-    }
+    weightInput?.addEventListener('input', (e) => {
+      this.updateCarcass('weight', parseFloat(e.target.value) || 0);
+    });
 
-    if (priceInput) {
-      priceInput.addEventListener('input', (e) => {
-        this.updateCarcass('pricePerKg', parseFloat(e.target.value) || 0);
-      });
-    }
+    priceInput?.addEventListener('input', (e) => {
+      this.updateCarcass('pricePerKg', parseFloat(e.target.value) || 0);
+    });
 
     if (marginInput) {
       marginInput.addEventListener('input', (e) => {
@@ -126,9 +95,7 @@ export class AppController {
 
         // Clamp ao máximo 99.99
         const pct = parseFloat(raw);
-        if (!isNaN(pct) && pct > 99.99) {
-          e.target.value = '99.99';
-        }
+        if (!isNaN(pct) && pct > 99.99) e.target.value = '99.99';
 
         const final = parseFloat(e.target.value);
         this._targetMargin = (final >= 0.01 && final <= 99.99) ? final / 100 : 0.30;
@@ -136,31 +103,91 @@ export class AppController {
       });
     }
 
-    if (addCutBtn) {
-      addCutBtn.addEventListener('click', () => this.addCut());
-    }
+    addCutBtn?.addEventListener('click', () => this.addCut());
+
+    document.getElementById('toggle-all-subproduct-btn')
+      ?.addEventListener('click', () => this.toggleAllSubproduct());
+
+    this._bindSettingsPanel();
+  }
+
+  _bindSettingsPanel() {
+    const btn   = document.getElementById('settings-btn');
+    const panel = document.getElementById('settings-panel');
+    if (!btn || !panel) return;
+
+    // Sincroniza os botões do painel com as configurações persistidas
+    panel.querySelectorAll('.toggle-opt').forEach((opt) => {
+      opt.classList.toggle('active', this._settings[opt.dataset.setting] === opt.dataset.value);
+    });
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = !panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', open);
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+
+    panel.addEventListener('click', (e) => {
+      const opt = e.target.closest('.toggle-opt');
+      if (!opt) return;
+      const { setting, value } = opt.dataset;
+      if (!setting || !value) return;
+
+      opt.closest('.toggle-group').querySelectorAll('.toggle-opt').forEach((o) => {
+        o.classList.toggle('active', o === opt);
+      });
+
+      this._settings[setting] = value;
+      this._saveSettings();
+      this._recalculate();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target !== btn) {
+        panel.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
 
   /* ============================================================
-     PRIVATE — DEFAULT CUTS LOADING
+     PERSISTÊNCIA DE CONFIGURAÇÕES
      ============================================================ */
 
-  /**
-   * Replaces the current cuts with the defaults for the given type
-   * and updates the datalist autocomplete suggestions.
-   * @param {string} type
-   */
+  static _SETTINGS_KEY = 'fc_settings';
+
+  _loadSettings() {
+    const defaults = { priceMode: 'margin', costMode: 'scarcity' };
+    try {
+      const saved = JSON.parse(localStorage.getItem(AppController._SETTINGS_KEY));
+      if (saved && typeof saved === 'object') {
+        return {
+          priceMode: saved.priceMode === 'markup'  ? 'markup'  : 'margin',
+          costMode:  saved.costMode  === 'equal'   ? 'equal'   : 'scarcity',
+        };
+      }
+    } catch { /* ignora erros de parse */ }
+    return defaults;
+  }
+
+  _saveSettings() {
+    try {
+      localStorage.setItem(AppController._SETTINGS_KEY, JSON.stringify(this._settings));
+    } catch { /* ignora erros de quota */ }
+  }
+
+  /* ============================================================
+     CARREGAMENTO DE CORTES PADRÃO
+     ============================================================ */
+
   _loadDefaultCuts(type) {
     const names = this._cutsByType[type] ?? [];
-    this._cuts = names.map((name) => new Cut({ name }));
+    this._cuts  = names.map((name) => new Cut({ name }));
     this._updateDatalist(type);
     this._renderAll();
   }
 
-  /**
-   * Updates the autocomplete datalist to show only cuts for the given type.
-   * @param {string} type
-   */
   _updateDatalist(type) {
     const datalist = document.getElementById('cuts-suggestions');
     if (!datalist) return;
@@ -175,28 +202,19 @@ export class AppController {
   }
 
   /* ============================================================
-     PRIVATE — RECALCULATION
+     RECALCULAÇÃO E RENDERIZAÇÃO
      ============================================================ */
 
-  /**
-   * Runs the full calculation pipeline and hands results to the view.
-   */
   _recalculate() {
     const { cutResults, summary } = CalculationService.calculate(
-      this._carcass,
-      this._cuts,
-      this._targetMargin
+      this._carcass, this._cuts, this._targetMargin, this._settings
     );
-
-    this._view.renderTable(cutResults, this._targetMargin);
+    this._view.renderTable(cutResults, this._targetMargin, this._settings);
     this._view.renderSummary(summary);
     this._view.renderWasteAlert(summary.wastePercent);
   }
 
-  /**
-   * Renders the cut input rows AND triggers a recalculation.
-   * Used when the cuts array structure changes (add/remove).
-   */
+  // Renderiza as linhas de cortes E recalcula. Usado quando a estrutura muda (add/remove).
   _renderAll() {
     this._view.renderCuts(this._cuts);
     this._recalculate();
