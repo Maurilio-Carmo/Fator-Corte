@@ -2,6 +2,19 @@
 // Ponto de entrada: carrega os componentes HTML, monta o layout e inicializa o MVC.
 import { AppController } from './controllers/AppController.js';
 
+// Versão da aplicação — deve corresponder ao CACHE_VERSION em sw.js
+const APP_VERSION = 'v1.0.1';
+
+// Estado PWA compartilhado com o AppController via window.__pwa
+window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false };
+
+// Captura o prompt de instalação PWA o mais cedo possível
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.__pwa.installPrompt = e;
+  window.dispatchEvent(new Event('pwa-installable'));
+});
+
 async function fetchHTML(path) {
   const res = await fetch(path);
   if (!res.ok) throw new Error(`Falha ao carregar componente: ${path}`);
@@ -51,9 +64,36 @@ bootstrap().catch((err) => {
   document.getElementById('app').textContent = 'Erro ao carregar a aplicação.';
 });
 
-// Registro do Service Worker para funcionamento offline
+// Registro do Service Worker e detecção de atualizações
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch((err) => {
+  // Flag: havia controller antes? Se sim, um controllerchange posterior = update real
+  const hadController = !!navigator.serviceWorker.controller;
+
+  navigator.serviceWorker.register('./sw.js').then((reg) => {
+    // SW já aguardando (pode ocorrer se skipWaiting não estiver ativo)
+    if (reg.waiting) {
+      window.__pwa.hasUpdate = true;
+      window.dispatchEvent(new Event('pwa-update-ready'));
+    }
+    // Nova versão baixando enquanto o app está aberto
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      sw?.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          window.__pwa.hasUpdate = true;
+          window.dispatchEvent(new Event('pwa-update-ready'));
+        }
+      });
+    });
+  }).catch((err) => {
     console.warn('Service Worker não registrado:', err);
+  });
+
+  // Nova versão assumiu o controle (após skipWaiting + clients.claim)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) {
+      window.__pwa.hasUpdate = true;
+      window.dispatchEvent(new Event('pwa-update-ready'));
+    }
   });
 }

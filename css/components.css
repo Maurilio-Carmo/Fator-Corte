@@ -650,10 +650,10 @@ select.form-input option {
 }
 
 /* ============================================================
-   PAINEL DE CONFIGURAÇÕES
+   CONFIGURAÇÕES — DRAWER LATERAL DIREITO
    ============================================================ */
 
-/* Ícone: ☰ fechado → ✕ aberto */
+/* Botão de abertura */
 .settings-btn {
   font-size: var(--text-lg, 1.125rem);
   width: 36px;
@@ -673,20 +673,85 @@ select.form-input option {
   content: '✕';
 }
 
-.settings-panel {
-  position: absolute;
-  top: calc(100% + var(--space-2));
+/* Overlay escurecido atrás do drawer */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: var(--z-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Drawer */
+.settings-drawer {
+  position: fixed;
+  top: 0;
   right: 0;
-  z-index: 200;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: var(--space-4);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xl);
+  z-index: calc(var(--z-overlay) + 1);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  min-width: 220px;
+  transform: translateX(100%);
+  transition: transform var(--transition-normal);
+}
+
+.settings-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+.drawer-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-cream);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.drawer-footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+/* Conteúdo PWA no rodapé */
+.pwa-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pwa-version {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
 }
 
 .settings-group {

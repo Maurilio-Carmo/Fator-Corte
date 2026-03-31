@@ -1,4 +1,45 @@
 <!-- components/header.html -->
+<div id="drawer-overlay" class="drawer-overlay"></div>
+
+<aside
+  id="settings-panel"
+  class="settings-drawer"
+  role="dialog"
+  aria-label="Configurações"
+  aria-modal="true"
+  inert
+>
+  <div class="drawer-header">
+    <span class="drawer-title">Configurações</span>
+    <button
+      type="button"
+      id="drawer-close-btn"
+      class="btn btn-ghost btn-icon"
+      aria-label="Fechar configurações"
+    >✕</button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="settings-group">
+      <span class="settings-label" id="label-price-mode">Cálculo do preço mínimo</span>
+      <div class="toggle-group" role="group" aria-labelledby="label-price-mode">
+        <button type="button" class="toggle-opt active" data-setting="priceMode" data-value="margin">Margem</button>
+        <button type="button" class="toggle-opt" data-setting="priceMode" data-value="markup">Markup</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <span class="settings-label" id="label-cost-mode">Distribuição de custo</span>
+      <div class="toggle-group" role="group" aria-labelledby="label-cost-mode">
+        <button type="button" class="toggle-opt active" data-setting="costMode" data-value="scarcity">Escassez</button>
+        <button type="button" class="toggle-opt" data-setting="costMode" data-value="equal">Igualitária</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="drawer-footer" id="drawer-footer"></footer>
+</aside>
+
 <header class="site-header" role="banner">
   <div class="header-inner">
     <div class="header-brand">
@@ -17,22 +58,6 @@
         aria-expanded="false"
         aria-controls="settings-panel"
       ></button>
-      <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="Configurações">
-        <div class="settings-group">
-          <span class="settings-label">Cálculo do preço mínimo</span>
-          <div class="toggle-group" role="group">
-            <button type="button" class="toggle-opt active" data-setting="priceMode" data-value="margin">Margem</button>
-            <button type="button" class="toggle-opt" data-setting="priceMode" data-value="markup">Markup</button>
-          </div>
-        </div>
-        <div class="settings-group">
-          <span class="settings-label">Distribuição de custo</span>
-          <div class="toggle-group" role="group">
-            <button type="button" class="toggle-opt active" data-setting="costMode" data-value="scarcity">Escassez</button>
-            <button type="button" class="toggle-opt" data-setting="costMode" data-value="equal">Igualitária</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </header>
