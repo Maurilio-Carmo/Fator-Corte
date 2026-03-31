@@ -1,8 +1,6 @@
 /* css/index.css */
-/* ============================================================
-   css/index.css — Entry point. Imports all stylesheets in order.
-   Include only this file in index.html.
-   ============================================================ */
+/* Ponto de entrada do CSS. Importa todos os arquivos na ordem correta.
+   Inclua apenas este arquivo no index.html. */
 
 @import './base.css';
 @import './layout.css';
