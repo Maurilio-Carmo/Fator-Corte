@@ -112,43 +112,128 @@ export class AppController {
   }
 
   _bindSettingsPanel() {
-    const btn   = document.getElementById('settings-btn');
-    const panel = document.getElementById('settings-panel');
-    if (!btn || !panel) return;
+    const btn      = document.getElementById('settings-btn');
+    const drawer   = document.getElementById('settings-panel');
+    const overlay  = document.getElementById('drawer-overlay');
+    const closeBtn = document.getElementById('drawer-close-btn');
+    if (!btn || !drawer) return;
 
-    // Sincroniza os botões do painel com as configurações persistidas
-    panel.querySelectorAll('.toggle-opt').forEach((opt) => {
+    // Sincroniza os botões com as configurações persistidas
+    drawer.querySelectorAll('.toggle-opt').forEach((opt) => {
       opt.classList.toggle('active', this._settings[opt.dataset.setting] === opt.dataset.value);
     });
 
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const open = !panel.classList.contains('hidden');
-      panel.classList.toggle('hidden', open);
-      btn.setAttribute('aria-expanded', String(!open));
+    const openDrawer = () => {
+      drawer.removeAttribute('inert');
+      drawer.classList.add('open');
+      overlay?.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      closeBtn?.focus();
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.remove('open');
+      overlay?.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      drawer.addEventListener('transitionend', () => drawer.setAttribute('inert', ''), { once: true });
+      btn.focus();
+    };
+
+    btn.addEventListener('click', openDrawer);
+    closeBtn?.addEventListener('click', closeDrawer);
+    overlay?.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
     });
 
-    panel.addEventListener('click', (e) => {
+    // Alterna configurações
+    drawer.addEventListener('click', (e) => {
       const opt = e.target.closest('.toggle-opt');
       if (!opt) return;
       const { setting, value } = opt.dataset;
       if (!setting || !value) return;
-
-      opt.closest('.toggle-group').querySelectorAll('.toggle-opt').forEach((o) => {
+      opt.closest('.toggle-group')?.querySelectorAll('.toggle-opt').forEach((o) => {
         o.classList.toggle('active', o === opt);
       });
-
       this._settings[setting] = value;
       this._saveSettings();
       this._recalculate();
     });
 
-    document.addEventListener('click', (e) => {
-      if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target !== btn) {
-        panel.classList.add('hidden');
-        btn.setAttribute('aria-expanded', 'false');
+    this._bindPwaFooter();
+  }
+
+  _bindPwaFooter() {
+    const footer = document.getElementById('drawer-footer');
+    if (!footer) return;
+
+    const VERSION     = window.__pwa?.version ?? '';
+    const isInstalled = window.matchMedia('(display-mode: standalone)').matches
+      || navigator.standalone === true;
+
+    const clear = () => { while (footer.firstChild) footer.removeChild(footer.firstChild); };
+
+    const renderVersionInfo = (hasUpdate = false) => {
+      clear();
+      const wrap = document.createElement('div');
+      wrap.className = 'pwa-info';
+
+      if (VERSION) {
+        const ver = document.createElement('span');
+        ver.className   = 'pwa-version';
+        ver.textContent = `Versão ${VERSION}`;
+        wrap.appendChild(ver);
       }
-    });
+
+      if (hasUpdate) {
+        const btn = document.createElement('button');
+        btn.type        = 'button';
+        btn.className   = 'btn btn-primary btn-block';
+        btn.textContent = 'Atualizar aplicativo';
+        btn.addEventListener('click', () => window.location.reload());
+        wrap.appendChild(btn);
+      }
+
+      footer.appendChild(wrap);
+    };
+
+    const renderInstallButton = () => {
+      clear();
+      const wrap = document.createElement('div');
+      wrap.className = 'pwa-info';
+      const btn = document.createElement('button');
+      btn.type        = 'button';
+      btn.className   = 'btn btn-primary btn-block';
+      btn.textContent = 'Instalar aplicativo';
+      btn.addEventListener('click', async () => {
+        const prompt = window.__pwa?.installPrompt;
+        if (!prompt) return;
+        prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+        if (outcome === 'accepted') {
+          if (window.__pwa) window.__pwa.installPrompt = null;
+          renderVersionInfo(false);
+        }
+      });
+      wrap.appendChild(btn);
+      footer.appendChild(wrap);
+    };
+
+    // Decide o estado correto e re-renderiza ao receber eventos
+    const refresh = () => {
+      if (window.__pwa?.hasUpdate)                     return renderVersionInfo(true);
+      if (!isInstalled && window.__pwa?.installPrompt) return renderInstallButton();
+      renderVersionInfo(false);
+    };
+
+    window.addEventListener('pwa-update-ready', () => {
+      if (window.__pwa) window.__pwa.hasUpdate = true;
+      refresh();
+    }, { once: true });
+
+    window.addEventListener('pwa-installable', () => refresh(), { once: true });
+
+    refresh();
   }
 
   /* ============================================================
