@@ -1,16 +1,14 @@
 /* css/layout.css */
-/* ============================================================
-   layout.css — Grid, Containers, Structure
-   ============================================================ */
+/* Grid, containers e estrutura da página. */
 
-/* ---- Page wrapper ---- */
+/* Wrapper da página */
 .page-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* ---- Site header ---- */
+/* Cabeçalho */
 .site-header {
   background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-elevated) 100%);
   border-bottom: 2px solid var(--color-amber-dark);
@@ -63,7 +61,13 @@
   gap: var(--space-6);
 }
 
-/* ---- Main content area — grid de 2 colunas com áreas nomeadas ---- */
+.header-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Conteúdo principal: grid de 2 colunas com áreas nomeadas */
 .main-content {
   flex: 1;
   max-width: 1600px;
@@ -101,7 +105,7 @@
   min-width: 0;
 }
 
-/* ---- Section wrapper ---- */
+/* Seção */
 .section {
   display: flex;
   flex-direction: column;
@@ -130,14 +134,14 @@
   font-size: var(--text-xl);
 }
 
-/* ---- Summary cards grid ---- */
+/* Grid dos cards de resumo */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
 }
 
-/* ---- Table wrapper ---- */
+/* Tabela */
 .table-wrapper {
   overflow-x: auto;
   border-radius: var(--radius-lg);
@@ -146,7 +150,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* ---- Alert bar ---- */
+/* Barra de alerta */
 .alert-bar {
   width: 100%;
   padding: var(--space-3) var(--space-6);
@@ -158,9 +162,7 @@
   font-weight: var(--font-medium);
 }
 
-.alert-bar.hidden {
-  display: none;
-}
+.alert-bar.hidden { display: none; }
 
 .alert-bar.alert-danger {
   background: var(--color-danger-bg);
@@ -179,7 +181,7 @@
   flex-shrink: 0;
 }
 
-/* ---- Cuts list ---- */
+/* Lista de cortes */
 .cuts-list {
   display: flex;
   flex-direction: column;
@@ -188,12 +190,12 @@
 
 .cut-row {
   display: grid;
-  grid-template-columns: 1fr 80px 80px 32px;
+  grid-template-columns: 1fr 80px 80px 32px 32px;
   gap: var(--space-2);
   align-items: end;
 }
 
-/* ---- Footer ---- */
+/* Rodapé */
 .site-footer {
   background: var(--color-bg-surface);
   border-top: 1px solid var(--color-border-subtle);
@@ -214,7 +216,7 @@
   color: var(--color-text-muted);
 }
 
-/* ---- Responsive breakpoints ---- */
+/* Responsividade */
 @media (max-width: 1280px) {
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -247,15 +249,13 @@
     display: none;
   }
 
-  /* summary-grid mantém 2×2 em todos os tamanhos de mobile */
-
   .cut-row {
-    grid-template-columns: 1fr 64px 72px 36px;
+    grid-template-columns: 1fr 64px 72px 32px 32px;
     gap: var(--space-2);
   }
 
   .cut-row-header {
-    grid-template-columns: 1fr 64px 72px 36px;
+    grid-template-columns: 1fr 64px 72px 32px 32px;
     gap: var(--space-2);
   }
 
@@ -270,12 +270,12 @@
   }
 
   .cut-row {
-    grid-template-columns: 1fr 60px 68px 36px;
+    grid-template-columns: 1fr 60px 68px 28px 28px;
     gap: var(--space-1);
   }
 
   .cut-row-header {
-    grid-template-columns: 1fr 60px 68px 36px;
+    grid-template-columns: 1fr 60px 68px 28px 28px;
     gap: var(--space-1);
   }
 }

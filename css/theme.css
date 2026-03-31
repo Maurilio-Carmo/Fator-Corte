@@ -1,9 +1,7 @@
 /* css/theme.css */
-/* ============================================================
-   theme.css — Dark Theme, Decorative Touches, Animations
-   ============================================================ */
+/* Tema escuro, elementos decorativos e animações. */
 
-/* ---- Background texture ---- */
+/* Textura de fundo */
 body::before {
   content: '';
   position: fixed;
@@ -20,7 +18,7 @@ body::before {
   z-index: 1;
 }
 
-/* ---- Header glow accent ---- */
+/* Brilho decorativo do header */
 .site-header {
   background: linear-gradient(
     135deg,
@@ -48,7 +46,7 @@ body::before {
   opacity: 0.6;
 }
 
-/* ---- Brand title amber gradient ---- */
+/* Gradiente âmbar no título */
 .header-brand h1,
 .app-title {
   background: linear-gradient(
@@ -63,7 +61,7 @@ body::before {
   text-fill-color: transparent;
 }
 
-/* ---- Card hover accent ---- */
+/* Destaque âmbar no hover do card de resumo */
 .summary-card:hover::before {
   background: linear-gradient(
     90deg,
@@ -74,7 +72,7 @@ body::before {
   opacity: 1;
 }
 
-/* ---- Animated amber pulse on add-cut button ---- */
+/* Pulso âmbar no botão de adicionar corte */
 @keyframes amber-pulse {
   0%   { box-shadow: 0 0 0 0 rgba(193,127,36,0.4); }
   70%  { box-shadow: 0 0 0 8px rgba(193,127,36,0); }
@@ -98,41 +96,28 @@ body::before {
   }
 }
 
-/* ---- Fade-in for new cut rows ---- */
+/* Animação de entrada dos cortes */
 @keyframes fade-in-slide {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .cut-row-animated {
   animation: fade-in-slide 200ms ease forwards;
 }
 
-/* ---- Table row highlight on hover ---- */
-.data-table tbody tr:hover td {
-  color: var(--color-cream);
-}
+/* Destaque da linha da tabela no hover */
+.data-table tbody tr:hover td { color: var(--color-cream); }
 
-.data-table tbody tr:hover td.col-fr {
-  background: #122030;
-}
+.data-table tbody tr:hover td.col-fr { background: #122030; }
+.data-table tbody tr:hover td.col-fc { background: #3d2400; }
 
-.data-table tbody tr:hover td.col-fc {
-  background: #3d2400;
-}
-
-/* ---- Summary card value glow ---- */
+/* Brilho nos valores dos cards de resumo */
 .summary-card-value {
   text-shadow: 0 0 20px rgba(212,146,42,0.3);
 }
 
-/* ---- Section title decorative line ---- */
+/* Linha decorativa nos títulos de seção */
 .section-title::before {
   content: '';
   display: inline-block;
@@ -144,20 +129,20 @@ body::before {
   flex-shrink: 0;
 }
 
-/* ---- Input focus glow ---- */
+/* Brilho no foco dos inputs */
 .form-input:focus {
   box-shadow:
     0 0 0 3px rgba(193, 127, 36, 0.2),
     inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
-/* ---- Card amber accent border on hover ---- */
+/* Borda âmbar no hover dos cards */
 .card:hover {
   border-color: var(--color-amber-dark);
   box-shadow: var(--shadow-lg), var(--shadow-amber);
 }
 
-/* ---- Status dot indicator ---- */
+/* Indicador de status (ponto colorido) */
 .status-dot {
   display: inline-block;
   width: 8px;
@@ -170,7 +155,7 @@ body::before {
 .status-dot.yellow { background: var(--color-warning-text); box-shadow: 0 0 6px var(--color-warning-text); }
 .status-dot.red    { background: var(--color-danger-text);  box-shadow: 0 0 6px var(--color-danger-text);  }
 
-/* ---- Alert danger animation ---- */
+/* Animação de alerta (shake) */
 @keyframes alert-shake {
   0%, 100% { transform: translateX(0); }
   25%       { transform: translateX(-4px); }
@@ -181,7 +166,7 @@ body::before {
   animation: alert-shake 0.4s ease;
 }
 
-/* ---- Waste percent bar ---- */
+/* Barra de percentual de quebra */
 .waste-bar-track {
   height: 6px;
   background: var(--color-bg-surface);
@@ -197,15 +182,10 @@ body::before {
   background: var(--color-success-text);
 }
 
-.waste-bar-fill.warning {
-  background: var(--color-warning-text);
-}
+.waste-bar-fill.warning { background: var(--color-warning-text); }
+.waste-bar-fill.danger  { background: var(--color-danger-text); }
 
-.waste-bar-fill.danger {
-  background: var(--color-danger-text);
-}
-
-/* ---- Table FR header accent ---- */
+/* Destaque dos cabeçalhos FR e FC */
 .data-table th.col-fr {
   color: var(--color-fr-text);
   text-shadow: 0 0 12px rgba(144, 202, 249, 0.4);
@@ -216,13 +196,12 @@ body::before {
   text-shadow: 0 0 12px rgba(255, 204, 128, 0.4);
 }
 
-
-/* ---- Scrollbar amber thumb on focus ---- */
+/* Scrollbar âmbar quando a tabela está em foco */
 .table-wrapper:focus-within::-webkit-scrollbar-thumb {
   background: var(--color-amber);
 }
 
-/* ---- Print styles ---- */
+/* Estilos de impressão */
 @media print {
   body {
     background: #fff;
@@ -236,13 +215,9 @@ body::before {
     display: none !important;
   }
 
-  .two-column-layout {
-    display: block;
-  }
+  .two-column-layout { display: block; }
 
-  .full-width-section {
-    page-break-inside: avoid;
-  }
+  .full-width-section { page-break-inside: avoid; }
 
   .data-table thead th,
   .data-table tbody td {
