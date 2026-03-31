@@ -28,7 +28,7 @@
 
   --color-text-primary:   #f5e6d0;
   --color-text-secondary: #c8a882;
-  --color-text-muted:     #8a7060;
+  --color-text-muted:     #c4a082;
   --color-text-disabled:  #5a4838;
 
   --color-border:         #5a3820;
@@ -127,6 +127,7 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
