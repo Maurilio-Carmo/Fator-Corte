@@ -57,6 +57,7 @@ export class AppView {
     const row = document.createElement('div');
     row.className    = 'cut-row cut-row-animated';
     row.dataset.cutId = cut.id;
+    row.setAttribute('role', 'listitem');
 
     const nameInput = document.createElement('input');
     nameInput.type      = 'text';
@@ -130,6 +131,7 @@ export class AppView {
       if (!emptyEl) {
         emptyEl = document.createElement('div');
         emptyEl.className = 'cuts-empty-state empty-state';
+        emptyEl.setAttribute('role', 'listitem');
         const icon = document.createElement('span');
         icon.className   = 'empty-state-icon';
         icon.textContent = '🥩';
@@ -262,7 +264,8 @@ export class AppView {
     if (this._sumMargemStatusEl) {
       const status = CalculationService.marginStatus(averageMargin);
       this._sumMargemStatusEl.className = `status-dot ${status}`;
-      this._sumMargemStatusEl.setAttribute('aria-label', `Margem ${status}`);
+      const statusLabel = { green: 'Margem boa (≥30%)', yellow: 'Margem baixa (20–30%)', red: 'Margem crítica (<20%)' };
+      this._sumMargemStatusEl.setAttribute('aria-label', statusLabel[status] ?? `Margem ${status}`);
     }
   }
 

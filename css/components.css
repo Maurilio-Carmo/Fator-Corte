@@ -586,7 +586,7 @@ select.form-input option {
 
 .empty-state-text {
   font-size: var(--text-sm);
-  color: var(--color-text-disabled);
+  color: var(--color-text-muted);
 }
 
 /* ============================================================
