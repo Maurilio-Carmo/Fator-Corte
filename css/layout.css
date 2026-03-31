@@ -195,6 +195,10 @@
   align-items: end;
 }
 
+.cut-row > * {
+  min-width: 0;
+}
+
 /* Rodapé */
 .site-footer {
   background: var(--color-bg-surface);
@@ -269,13 +273,17 @@
     gap: var(--space-5);
   }
 
+  .card {
+    padding: var(--space-4);
+  }
+
   .cut-row {
-    grid-template-columns: 1fr 60px 68px 28px 28px;
+    grid-template-columns: 1fr 56px 64px 28px 28px;
     gap: var(--space-1);
   }
 
   .cut-row-header {
-    grid-template-columns: 1fr 60px 68px 28px 28px;
+    grid-template-columns: 1fr 56px 64px 28px 28px;
     gap: var(--space-1);
   }
 }
