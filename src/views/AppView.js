@@ -43,15 +43,7 @@ export class AppView {
 
     const priceLabelEl = document.getElementById('cut-col-price-label');
     if (priceLabelEl) {
-      if (inputMode === 'per_cut') {
-        priceLabelEl.textContent = '%';
-        priceLabelEl.style.visibility = '';
-      } else if (inputMode === 'margin_global') {
-        priceLabelEl.style.visibility = 'hidden';
-      } else {
-        priceLabelEl.textContent = 'Preço';
-        priceLabelEl.style.visibility = '';
-      }
+      priceLabelEl.textContent = inputMode === 'per_cut' ? '%' : 'Preço';
     }
 
     const toggleAllBtn = document.getElementById('toggle-all-subproduct-btn');
@@ -109,11 +101,6 @@ export class AppView {
       priceInput.max = '99.99';
       priceInput.setAttribute('aria-label', 'Margem desejada para o corte em %');
       if (cut.salePrice > 0) priceInput.value = cut.salePrice;
-    } else if (inputMode === 'margin_global') {
-      priceInput.placeholder = '';
-      priceInput.style.visibility = 'hidden';
-      priceInput.setAttribute('aria-hidden', 'true');
-      priceInput.setAttribute('tabindex', '-1');
     } else {
       priceInput.placeholder = 'R$/kg';
       priceInput.setAttribute('aria-label', 'Preço de venda por kg');

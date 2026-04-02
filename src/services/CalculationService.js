@@ -61,14 +61,6 @@ export class CalculationService {
         grossRevenue = cut.weight * minPriceTarget;
         margin       = cutMargin;
         priceDiff    = 0;
-      } else if (inputMode === 'margin_global') {
-        // Usa a margem global (targetMargin) para calcular o preço mínimo de cada corte
-        minPriceTarget = priceMode === 'markup'
-          ? realCostPerKg * (1 + targetMargin)
-          : (targetMargin < 1 ? realCostPerKg / (1 - targetMargin) : 0);
-        grossRevenue = cut.weight * minPriceTarget;
-        margin       = targetMargin;
-        priceDiff    = 0;
       } else {
         // Modo padrão: usuário informa o preço de venda
         grossRevenue = cut.weight * cut.salePrice;
