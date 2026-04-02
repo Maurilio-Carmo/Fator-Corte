@@ -37,9 +37,22 @@ export class AppView {
   renderCuts(cuts) {
     this._cutsListEl.querySelectorAll('.cut-row').forEach((el) => el.remove());
 
-    const { costMode } = this._controller.settings;
+    const { costMode, inputMode } = this._controller.settings;
     const cutsSection = this._cutsListEl.closest('.section');
     if (cutsSection) cutsSection.dataset.costMode = costMode;
+
+    const priceLabelEl = document.getElementById('cut-col-price-label');
+    if (priceLabelEl) {
+      if (inputMode === 'per_cut') {
+        priceLabelEl.textContent = '%';
+        priceLabelEl.style.visibility = '';
+      } else if (inputMode === 'margin_global') {
+        priceLabelEl.style.visibility = 'hidden';
+      } else {
+        priceLabelEl.textContent = 'Preço';
+        priceLabelEl.style.visibility = '';
+      }
+    }
 
     const toggleAllBtn = document.getElementById('toggle-all-subproduct-btn');
     if (toggleAllBtn) {
@@ -86,12 +99,26 @@ export class AppView {
     const priceInput = document.createElement('input');
     priceInput.type      = 'number';
     priceInput.className = 'form-input form-input-sm';
-    priceInput.placeholder = 'R$/kg';
     priceInput.min  = '0';
     priceInput.step = '0.01';
-    priceInput.setAttribute('aria-label', 'Preço de venda por kg');
-    if (cut.salePrice > 0) priceInput.value = cut.salePrice;
     priceInput.addEventListener('input', (e) => this._controller.updateCut(cut.id, 'salePrice', parseFloat(e.target.value) || 0));
+
+    const { inputMode } = this._controller.settings;
+    if (inputMode === 'per_cut') {
+      priceInput.placeholder = '%';
+      priceInput.max = '99.99';
+      priceInput.setAttribute('aria-label', 'Margem desejada para o corte em %');
+      if (cut.salePrice > 0) priceInput.value = cut.salePrice;
+    } else if (inputMode === 'margin_global') {
+      priceInput.placeholder = '';
+      priceInput.style.visibility = 'hidden';
+      priceInput.setAttribute('aria-hidden', 'true');
+      priceInput.setAttribute('tabindex', '-1');
+    } else {
+      priceInput.placeholder = 'R$/kg';
+      priceInput.setAttribute('aria-label', 'Preço de venda por kg');
+      if (cut.salePrice > 0) priceInput.value = cut.salePrice;
+    }
 
     const subproductBtn = document.createElement('button');
     subproductBtn.type      = 'button';

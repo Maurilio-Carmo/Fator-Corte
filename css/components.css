@@ -822,3 +822,9 @@ select.form-input option {
   color: #fff;
   font-weight: var(--font-semibold);
 }
+
+/* Campo desabilitado pelo modo de entrada por porcentagem */
+.field-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
