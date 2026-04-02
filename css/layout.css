@@ -246,7 +246,27 @@
 @media (max-width: 768px) {
   .header-inner {
     padding: var(--space-3) var(--space-4);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+  }
+
+  .header-brand {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .header-titles {
+    min-width: 0;
+  }
+
+  .header-titles .app-title,
+  .header-titles .header-tagline {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    flex-shrink: 0;
   }
 
   .header-meta {
@@ -285,5 +305,11 @@
   .cut-row-header {
     grid-template-columns: 1fr 56px 64px 28px 28px;
     gap: var(--space-1);
+  }
+}
+
+@media (max-width: 360px) {
+  .header-tagline {
+    display: none;
   }
 }
