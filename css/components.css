@@ -693,6 +693,24 @@ select.form-input option {
   content: '✕';
 }
 
+/* Bolinha de notificação de atualização disponível */
+.settings-btn {
+  position: relative;
+}
+
+.settings-btn--has-update::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f5c542;
+  box-shadow: 0 0 0 2px var(--color-bg, #1a0f08);
+  pointer-events: none;
+}
+
 /* Overlay escurecido atrás do drawer */
 .drawer-overlay {
   position: fixed;

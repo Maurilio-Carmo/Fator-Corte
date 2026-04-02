@@ -168,7 +168,8 @@ export class AppController {
   }
 
   _bindPwaFooter() {
-    const footer = document.getElementById('drawer-footer');
+    const footer      = document.getElementById('drawer-footer');
+    const settingsBtn = document.getElementById('settings-btn');
     if (!footer) return;
 
     const VERSION     = window.__pwa?.version ?? '';
@@ -179,6 +180,8 @@ export class AppController {
 
     const renderVersionInfo = (hasUpdate = false) => {
       clear();
+      settingsBtn?.classList.toggle('settings-btn--has-update', hasUpdate);
+
       const wrap = document.createElement('div');
       wrap.className = 'pwa-info';
 
