@@ -9,7 +9,7 @@
  * Para publicar uma atualização: incremente CACHE_VERSION.
  */
 
-const CACHE_VERSION = 'v1.0.7';
+const CACHE_VERSION = 'v1.0.8';
 const CACHE_NAME    = `fator-corte-${CACHE_VERSION}`;
 
 /** Todos os assets que devem funcionar offline. */
