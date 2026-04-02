@@ -655,9 +655,9 @@ select.form-input option {
 
 /* Botão de abertura */
 .settings-btn {
-  font-size: var(--text-lg, 1.125rem);
-  width: 36px;
-  height: 36px;
+  font-size: var(--text-xl, 1.25rem);
+  width: 44px;
+  height: 44px;
   transition: transform 200ms ease;
 }
 
