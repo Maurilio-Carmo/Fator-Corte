@@ -3,7 +3,7 @@
 import { AppController } from './controllers/AppController.js';
 
 // Versão da aplicação — deve corresponder ao CACHE_VERSION em sw.js
-const APP_VERSION = 'v1.0.6';
+const APP_VERSION = 'v1.0.7';
 
 // Estado PWA compartilhado com o AppController via window.__pwa
 window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false };
