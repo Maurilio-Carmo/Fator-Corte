@@ -6,16 +6,18 @@
  * Ao instalar, pré-cacheia todos os arquivos listados em ASSETS.
  * Ao ativar, remove caches de versões anteriores.
  *
- * Para publicar uma atualização: incremente CACHE_VERSION.
+ * Para publicar uma atualização: incremente APP_VERSION em version.js.
  */
 
-const CACHE_VERSION = 'v1.0.9';
-const CACHE_NAME    = `fator-corte-${CACHE_VERSION}`;
+import { APP_VERSION } from './version.js';
+
+const CACHE_NAME = `fator-corte-${APP_VERSION}`;
 
 /** Todos os assets que devem funcionar offline. */
 const ASSETS = [
   './',
   './index.html',
+  './version.js',
   './manifest.json',
   './css/index.css',
   './css/base.css',
@@ -44,8 +46,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  // Ativa imediatamente sem esperar o SW anterior ser descartado
-  self.skipWaiting();
+  // Não chama skipWaiting() aqui — aguarda o usuário confirmar a atualização.
 });
 
 /* ---- Activate: remove caches antigos ---- */
@@ -59,13 +60,16 @@ self.addEventListener('activate', (event) => {
       )
     )
   );
-  // Assume controle de clientes já abertos
   self.clients.claim();
+});
+
+/* ---- Message: usuário clicou em "Atualizar" ---- */
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 /* ---- Fetch: cache-first, com fallback para rede ---- */
 self.addEventListener('fetch', (event) => {
-  // Ignora requisições não-GET e chrome-extension
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
 
@@ -74,7 +78,6 @@ self.addEventListener('fetch', (event) => {
       if (cached) return cached;
 
       return fetch(event.request).then((response) => {
-        // Cacheia apenas respostas válidas
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));

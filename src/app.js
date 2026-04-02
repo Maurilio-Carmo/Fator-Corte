@@ -1,12 +1,10 @@
 // src/app.js
 // Ponto de entrada: carrega os componentes HTML, monta o layout e inicializa o MVC.
 import { AppController } from './controllers/AppController.js';
-
-// Versão da aplicação — deve corresponder ao CACHE_VERSION em sw.js
-const APP_VERSION = 'v1.0.9';
+import { APP_VERSION }   from '../version.js';
 
 // Estado PWA compartilhado com o AppController via window.__pwa
-window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false };
+window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false, swRegistration: null };
 
 // Captura o prompt de instalação PWA o mais cedo possível
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -66,15 +64,15 @@ bootstrap().catch((err) => {
 
 // Registro do Service Worker e detecção de atualizações
 if ('serviceWorker' in navigator) {
-  // Flag: havia controller antes? Se sim, um controllerchange posterior = update real
-  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('./sw.js', { type: 'module' }).then((reg) => {
+    window.__pwa.swRegistration = reg;
 
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
-    // SW já aguardando (pode ocorrer se skipWaiting não estiver ativo)
+    // SW já instalado e aguardando confirmação do usuário
     if (reg.waiting) {
       window.__pwa.hasUpdate = true;
       window.dispatchEvent(new Event('pwa-update-ready'));
     }
+
     // Nova versão baixando enquanto o app está aberto
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
@@ -89,11 +87,8 @@ if ('serviceWorker' in navigator) {
     console.warn('Service Worker não registrado:', err);
   });
 
-  // Nova versão assumiu o controle (após skipWaiting + clients.claim)
+  // Novo SW assumiu o controle após o usuário confirmar — recarrega a página
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (hadController) {
-      window.__pwa.hasUpdate = true;
-      window.dispatchEvent(new Event('pwa-update-ready'));
-    }
+    window.location.reload();
   });
 }

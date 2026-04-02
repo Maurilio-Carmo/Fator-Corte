@@ -218,7 +218,15 @@ export class AppController {
         btn.type        = 'button';
         btn.className   = 'btn btn-primary btn-block';
         btn.textContent = 'Atualizar aplicativo';
-        btn.addEventListener('click', () => window.location.reload());
+        btn.addEventListener('click', () => {
+          const reg = window.__pwa?.swRegistration;
+          if (reg?.waiting) {
+            // Envia sinal ao SW em espera; ele ativará e controllerchange recarregará
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          } else {
+            window.location.reload();
+          }
+        });
         wrap.appendChild(btn);
       }
 
