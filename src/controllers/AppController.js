@@ -255,7 +255,10 @@ export class AppController {
       footer.appendChild(wrap);
     };
 
-    // Decide o estado correto e re-renderiza ao receber eventos
+    // Decide o estado correto e re-renderiza ao receber eventos.
+    // Verifica window.__pwa diretamente para cobrir o caso em que
+    // beforeinstallprompt ou pwa-update-ready dispararam antes deste
+    // listener ser registrado (race condition entre app.js e bootstrap).
     const refresh = () => {
       if (window.__pwa?.hasUpdate)                     return renderVersionInfo(true);
       if (!isInstalled && window.__pwa?.installPrompt) return renderInstallButton();
@@ -269,7 +272,10 @@ export class AppController {
 
     window.addEventListener('pwa-installable', () => refresh(), { once: true });
 
-    refresh();
+    // setTimeout garante que o refresh rode após todos os eventos pendentes
+    // do ciclo de inicialização atual, evitando a race condition onde
+    // beforeinstallprompt chega antes dos listeners serem registrados.
+    setTimeout(refresh, 0);
   }
 
   /* ============================================================
@@ -284,9 +290,9 @@ export class AppController {
       const saved = JSON.parse(localStorage.getItem(AppController._SETTINGS_KEY));
       if (saved && typeof saved === 'object') {
         return {
-          priceMode:  saved.priceMode === 'markup'      ? 'markup'       : 'margin',
-          costMode:   saved.costMode  === 'equal'       ? 'equal'        : 'scarcity',
-          inputMode:  saved.inputMode === 'per_cut' ? 'per_cut' : 'price',
+          priceMode:  saved.priceMode === 'markup'   ? 'markup'   : 'margin',
+          costMode:   saved.costMode  === 'equal'    ? 'equal'    : 'scarcity',
+          inputMode:  saved.inputMode === 'per_cut'  ? 'per_cut'  : 'price',
         };
       }
     } catch { /* ignora erros de parse */ }

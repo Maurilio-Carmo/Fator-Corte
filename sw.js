@@ -6,12 +6,10 @@
  * Ao instalar, pré-cacheia todos os arquivos listados em ASSETS.
  * Ao ativar, remove caches de versões anteriores.
  *
- * Para publicar uma atualização: incremente APP_VERSION em version.js.
  */
 
-import { APP_VERSION } from './version.js';
-
-const CACHE_NAME = `fator-corte-${APP_VERSION}`;
+const APP_VERSION = 'v1.1.1';
+const CACHE_NAME  = `fator-corte-${APP_VERSION}`;
 
 /** Todos os assets que devem funcionar offline. */
 const ASSETS = [
