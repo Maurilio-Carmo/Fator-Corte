@@ -178,9 +178,30 @@ export class AppController {
 
     const clear = () => { while (footer.firstChild) footer.removeChild(footer.firstChild); };
 
+    // Cria/remove bolinha de notificação com estilos inline para funcionar
+    // mesmo com o CSS antigo em memória (antes do reload de atualização).
+    const setUpdateDot = (show) => {
+      if (!settingsBtn) return;
+      const existing = settingsBtn.querySelector('.update-dot');
+      if (show && !existing) {
+        const dot = document.createElement('span');
+        dot.className = 'update-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        Object.assign(dot.style, {
+          position: 'absolute', top: '7px', left: '7px',
+          width: '10px', height: '10px', borderRadius: '50%',
+          background: '#f5c542', pointerEvents: 'none', zIndex: '1',
+        });
+        settingsBtn.style.position = 'relative';
+        settingsBtn.appendChild(dot);
+      } else if (!show) {
+        existing?.remove();
+      }
+    };
+
     const renderVersionInfo = (hasUpdate = false) => {
       clear();
-      settingsBtn?.classList.toggle('settings-btn--has-update', hasUpdate);
+      setUpdateDot(hasUpdate);
 
       const wrap = document.createElement('div');
       wrap.className = 'pwa-info';
