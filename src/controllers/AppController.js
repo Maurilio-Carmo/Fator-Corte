@@ -20,6 +20,8 @@ export class AppController {
     this._renderAll();
   }
 
+  get settings() { return this._settings; }
+
   /* ============================================================
      API PÚBLICA
      ============================================================ */
@@ -157,7 +159,7 @@ export class AppController {
       });
       this._settings[setting] = value;
       this._saveSettings();
-      this._recalculate();
+      this._renderAll();
     });
 
     this._bindPwaFooter();
