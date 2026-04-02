@@ -17,6 +17,7 @@ export class AppController {
 
   init() {
     this._bindCarcassForm();
+    this._syncInputMode();
     this._renderAll();
   }
 
@@ -159,6 +160,7 @@ export class AppController {
       });
       this._settings[setting] = value;
       this._saveSettings();
+      if (setting === 'inputMode') this._syncInputMode();
       this._renderAll();
     });
 
@@ -245,17 +247,27 @@ export class AppController {
   static _SETTINGS_KEY = 'fc_settings';
 
   _loadSettings() {
-    const defaults = { priceMode: 'margin', costMode: 'scarcity' };
+    const defaults = { priceMode: 'margin', costMode: 'scarcity', inputMode: 'price' };
     try {
       const saved = JSON.parse(localStorage.getItem(AppController._SETTINGS_KEY));
       if (saved && typeof saved === 'object') {
         return {
-          priceMode: saved.priceMode === 'markup'  ? 'markup'  : 'margin',
-          costMode:  saved.costMode  === 'equal'   ? 'equal'   : 'scarcity',
+          priceMode:  saved.priceMode === 'markup'      ? 'markup'       : 'margin',
+          costMode:   saved.costMode  === 'equal'       ? 'equal'        : 'scarcity',
+          inputMode:  ['price', 'margin_global', 'per_cut'].includes(saved.inputMode)
+                        ? saved.inputMode : 'price',
         };
       }
     } catch { /* ignora erros de parse */ }
     return defaults;
+  }
+
+  _syncInputMode() {
+    const marginInput = document.getElementById('target-margin');
+    const formGroup   = marginInput?.closest('.form-group');
+    const isPercent   = this._settings.inputMode !== 'price';
+    if (marginInput)  marginInput.disabled = isPercent;
+    if (formGroup)    formGroup.classList.toggle('field-disabled', isPercent);
   }
 
   _saveSettings() {

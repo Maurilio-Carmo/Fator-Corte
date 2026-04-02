@@ -15,11 +15,11 @@ export class CalculationService {
    * @param {import('../models/Carcass.js').Carcass} carcass
    * @param {import('../models/Cut.js').Cut[]}       cuts
    * @param {number} [targetMargin=0.30]             - Decimal (ex: 0.30 = 30%)
-   * @param {{ priceMode?: 'margin'|'markup', costMode?: 'scarcity'|'equal' }} [settings]
+   * @param {{ priceMode?: 'margin'|'markup', costMode?: 'scarcity'|'equal', inputMode?: 'price'|'margin_global'|'per_cut' }} [settings]
    * @returns {{ cutResults: CutResult[], summary: Summary }}
    */
   static calculate(carcass, cuts, targetMargin = 0.30, settings = {}) {
-    const { priceMode = 'margin', costMode = 'scarcity' } = settings;
+    const { priceMode = 'margin', costMode = 'scarcity', inputMode = 'price' } = settings;
     const { weight: carcassWeight, pricePerKg } = carcass;
 
     const validCuts     = cuts.filter((c) => c.weight > 0);
@@ -49,19 +49,37 @@ export class CalculationService {
       const fc              = fcEscassez + fcDescarte;
       const realCostPerKg   = pricePerKg * fc;
       const proportionalCost = realCostPerKg * cut.weight;
-      const grossRevenue    = cut.weight * cut.salePrice;
 
-      // Margem = lucro / faturamento  |  Markup = lucro / custo
-      const margin = priceMode === 'markup'
-        ? (proportionalCost > 0 ? (grossRevenue - proportionalCost) / proportionalCost : 0)
-        : (grossRevenue > 0 ? (grossRevenue - proportionalCost) / grossRevenue : 0);
+      let grossRevenue, margin, minPriceTarget, priceDiff;
 
-      // Preço mínimo: margem usa custo / (1 - taxa), markup usa custo × (1 + taxa)
-      const minPriceTarget = priceMode === 'markup'
-        ? realCostPerKg * (1 + targetMargin)
-        : (targetMargin < 1 ? realCostPerKg / (1 - targetMargin) : 0);
-
-      const priceDiff = cut.salePrice - minPriceTarget;
+      if (inputMode === 'per_cut') {
+        // cut.salePrice armazena a margem desejada em % (ex: 30 → 30%)
+        const cutMargin = cut.salePrice / 100;
+        minPriceTarget = priceMode === 'markup'
+          ? realCostPerKg * (1 + cutMargin)
+          : (cutMargin < 1 ? realCostPerKg / (1 - cutMargin) : 0);
+        grossRevenue = cut.weight * minPriceTarget;
+        margin       = cutMargin;
+        priceDiff    = 0;
+      } else if (inputMode === 'margin_global') {
+        // Usa a margem global (targetMargin) para calcular o preço mínimo de cada corte
+        minPriceTarget = priceMode === 'markup'
+          ? realCostPerKg * (1 + targetMargin)
+          : (targetMargin < 1 ? realCostPerKg / (1 - targetMargin) : 0);
+        grossRevenue = cut.weight * minPriceTarget;
+        margin       = targetMargin;
+        priceDiff    = 0;
+      } else {
+        // Modo padrão: usuário informa o preço de venda
+        grossRevenue = cut.weight * cut.salePrice;
+        margin = priceMode === 'markup'
+          ? (proportionalCost > 0 ? (grossRevenue - proportionalCost) / proportionalCost : 0)
+          : (grossRevenue > 0 ? (grossRevenue - proportionalCost) / grossRevenue : 0);
+        minPriceTarget = priceMode === 'markup'
+          ? realCostPerKg * (1 + targetMargin)
+          : (targetMargin < 1 ? realCostPerKg / (1 - targetMargin) : 0);
+        priceDiff = cut.salePrice - minPriceTarget;
+      }
 
       return { cut, fr, frNorm, fc, realCostPerKg, proportionalCost, grossRevenue, margin, minPriceTarget, priceDiff };
     });
