@@ -254,8 +254,7 @@ export class AppController {
         return {
           priceMode:  saved.priceMode === 'markup'      ? 'markup'       : 'margin',
           costMode:   saved.costMode  === 'equal'       ? 'equal'        : 'scarcity',
-          inputMode:  ['price', 'margin_global', 'per_cut'].includes(saved.inputMode)
-                        ? saved.inputMode : 'price',
+          inputMode:  saved.inputMode === 'per_cut' ? 'per_cut' : 'price',
         };
       }
     } catch { /* ignora erros de parse */ }
