@@ -272,6 +272,20 @@ select.form-input option {
   text-align: center;
 }
 
+@media (max-width: 768px) {
+  .cut-row-header {
+    grid-template-columns: 1fr 64px 72px 32px 32px;
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .cut-row-header {
+    grid-template-columns: 1fr 56px 64px 28px 28px;
+    gap: var(--space-1);
+  }
+}
+
 /* ============================================================
    BOTÕES
    ============================================================ */
