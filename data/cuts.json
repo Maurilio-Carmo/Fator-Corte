@@ -9,7 +9,7 @@
     "Lagarto",
     "Capa e Aba",
     "Músculo",
-    "Retalhos (Moída)"
+    "Moída"
   ],
   "dianteiro": [
     "Acém",
@@ -17,8 +17,8 @@
     "Cupim",
     "Peito",
     "Paleta",
-    "Músculo Dianteiro",
-    "Retalhos Dianteiro"
+    "Músculo",
+    "Retalhos"
   ],
   "ponta-de-agulha": [
     "Costela",
@@ -28,11 +28,11 @@
   "suinos": [
     "Pernil",
     "Lombo",
-    "Costela Suína",
-    "Paleta Suína",
+    "Costela",
+    "Paleta",
     "Barriga",
     "Copa",
-    "Filé de Lombo",
-    "Retalhos Suíno"
+    "Lombo",
+    "Retalhos"
   ]
 }
