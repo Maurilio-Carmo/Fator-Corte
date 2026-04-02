@@ -363,6 +363,12 @@ select.form-input option {
   background: rgba(193, 127, 36, 0.25);
 }
 
+/* Oculta botões de retalho quando o modo de custo não usa escassez */
+[data-cost-mode="equal"] .btn-subproduct {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* Badge de retalho na tabela */
 .subproduct-badge {
   display: inline-block;

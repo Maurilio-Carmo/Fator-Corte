@@ -37,6 +37,10 @@ export class AppView {
   renderCuts(cuts) {
     this._cutsListEl.querySelectorAll('.cut-row').forEach((el) => el.remove());
 
+    const { costMode } = this._controller.settings;
+    const cutsSection = this._cutsListEl.closest('.section');
+    if (cutsSection) cutsSection.dataset.costMode = costMode;
+
     const toggleAllBtn = document.getElementById('toggle-all-subproduct-btn');
     if (toggleAllBtn) {
       const allAre = cuts.length > 0 && cuts.every((c) => c.isSubproduct);
