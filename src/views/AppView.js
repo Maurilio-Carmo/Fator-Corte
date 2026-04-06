@@ -170,12 +170,12 @@ export class AppView {
      ============================================================ */
 
   renderTable(results, targetMargin = 0.30, settings = {}) {
-    const { priceMode = 'margin' } = settings;
+    const { priceMode = 'margin', inputMode = 'price' } = settings;
     const pct = Math.round(targetMargin * 100);
 
     const thMinPrice = document.getElementById('th-min-price');
     if (thMinPrice) {
-      thMinPrice.textContent = `Preço Mín ${pct}%`;
+      thMinPrice.textContent = inputMode === 'per_cut' ? 'Preço Mín %' : `Preço Mín ${pct}%`;
       thMinPrice.title = priceMode === 'markup'
         ? `Preço mínimo aplicando ${pct}% de markup sobre o custo real`
         : `Preço mínimo de venda para atingir ${pct}% de margem`;
