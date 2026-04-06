@@ -8,7 +8,7 @@
  *
  */
 
-const APP_VERSION = 'v1.1.1';
+import { APP_VERSION } from './version.js';
 const CACHE_NAME  = `fator-corte-${APP_VERSION}`;
 
 /** Todos os assets que devem funcionar offline. */
