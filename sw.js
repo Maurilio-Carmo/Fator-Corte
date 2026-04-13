@@ -41,8 +41,12 @@ const ASSETS = [
 
 /* ---- Install: pré-cacheia todos os assets ---- */
 self.addEventListener('install', (event) => {
+  console.log(`[SW] Instalando cache: ${CACHE_NAME}`);
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log(`[SW] Cache aberto — pré-cacheando ${ASSETS.length} assets`);
+      return cache.addAll(ASSETS);
+    })
   );
   // Não chama skipWaiting() aqui — aguarda o usuário confirmar a atualização.
 });
@@ -50,20 +54,22 @@ self.addEventListener('install', (event) => {
 /* ---- Activate: remove caches antigos ---- */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
+    caches.keys().then((keys) => {
+      const old = keys.filter((key) => key !== CACHE_NAME);
+      if (old.length) console.log(`[SW] Removendo ${old.length} cache(s) antigo(s):`, old);
+      else console.log('[SW] Ativo — nenhum cache antigo encontrado');
+      return Promise.all(old.map((key) => caches.delete(key)));
+    })
   );
   self.clients.claim();
 });
 
 /* ---- Message: usuário clicou em "Atualizar" ---- */
 self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data?.type === 'SKIP_WAITING') {
+    console.log('[SW] skipWaiting — assumindo controle');
+    self.skipWaiting();
+  }
 });
 
 /* ---- Fetch: cache-first, com fallback para rede ---- */

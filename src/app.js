@@ -3,6 +3,8 @@
 import { AppController } from './controllers/AppController.js';
 import { APP_VERSION }   from '../version.js';
 
+console.log(`%c🥩 Fator de Corte %c${APP_VERSION}`, 'color:#c17f24;font-weight:bold;font-size:14px', 'color:#888;font-size:12px');
+
 // Estado PWA compartilhado com o AppController via window.__pwa
 window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false, swRegistration: null };
 
@@ -10,6 +12,7 @@ window.__pwa = { version: APP_VERSION, installPrompt: null, hasUpdate: false, sw
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   window.__pwa.installPrompt = e;
+  console.log('%c[PWA] Instalação disponível', 'color:#c17f24');
   window.dispatchEvent(new Event('pwa-installable'));
 });
 
@@ -26,6 +29,7 @@ async function fetchJSON(path) {
 }
 
 async function bootstrap() {
+  console.log('%c[App] Carregando componentes...', 'color:#888');
   const app = document.getElementById('app');
   app.className = 'page-wrapper';
 
@@ -55,6 +59,7 @@ async function bootstrap() {
   const cutsByType = await fetchJSON('data/cuts.json');
   const controller = new AppController(cutsByType);
   controller.init();
+  console.log('%c[App] Pronto ✓', 'color:#4caf50;font-weight:bold');
 }
 
 bootstrap().catch((err) => {
@@ -66,25 +71,29 @@ bootstrap().catch((err) => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js', { type: 'module' }).then((reg) => {
     window.__pwa.swRegistration = reg;
+    console.log('%c[SW] Registrado', 'color:#888');
 
     // SW já instalado e aguardando confirmação do usuário
     if (reg.waiting) {
       window.__pwa.hasUpdate = true;
+      console.log('%c[SW] Atualização pendente', 'color:#c17f24');
       window.dispatchEvent(new Event('pwa-update-ready'));
     }
 
     // Nova versão baixando enquanto o app está aberto
     reg.addEventListener('updatefound', () => {
+      console.log('%c[SW] Nova versão encontrada, baixando...', 'color:#c17f24');
       const sw = reg.installing;
       sw?.addEventListener('statechange', () => {
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
           window.__pwa.hasUpdate = true;
+          console.log('%c[SW] Atualização pronta ✓', 'color:#c17f24;font-weight:bold');
           window.dispatchEvent(new Event('pwa-update-ready'));
         }
       });
     });
   }).catch((err) => {
-    console.warn('Service Worker não registrado:', err);
+    console.warn('[SW] Não registrado:', err);
   });
 
   // Novo SW assumiu o controle após o usuário confirmar — recarrega a página
