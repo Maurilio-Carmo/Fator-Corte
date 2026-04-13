@@ -250,7 +250,7 @@
       "left"
       "right"
       "table";
-    padding: var(--space-6) 0;
+    padding: var(--space-6) var(--space-4);
   }
 
   .column-left {
@@ -305,7 +305,7 @@
 
 @media (max-width: 480px) {
   .main-content {
-    padding: var(--space-4) 0;
+    padding: var(--space-4) var(--space-3);
     gap: var(--space-5);
   }
 
