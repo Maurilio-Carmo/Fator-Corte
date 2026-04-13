@@ -326,19 +326,6 @@ select.form-input option {
   box-shadow: var(--shadow-md), 0 0 12px rgba(193,127,36,0.3);
 }
 
-/* Botão secundário */
-.btn-secondary {
-  background: var(--color-bg-elevated);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-cream);
-  border-color: var(--color-amber-dark);
-}
-
 /* Botão de apoio/doação */
 .btn-support {
   display: inline-flex;
@@ -454,12 +441,6 @@ select.form-input option {
   font-size: var(--text-xs);
 }
 
-.btn-lg {
-  padding: var(--space-4) var(--space-8);
-  font-size: var(--text-base);
-  border-radius: var(--radius-lg);
-}
-
 /* ============================================================
    TABELA
    ============================================================ */
@@ -567,19 +548,6 @@ select.form-input option {
 .price-diff.positive { color: var(--color-success-text); }
 .price-diff.negative { color: var(--color-danger-text); }
 
-/* Rodapé de totais da tabela */
-.data-table tfoot {
-  background: var(--color-bg-elevated);
-  border-top: 2px solid var(--color-border);
-}
-
-.data-table tfoot td {
-  padding: var(--space-3) var(--space-4);
-  font-weight: var(--font-semibold);
-  color: var(--color-amber-light);
-  font-size: var(--text-sm);
-}
-
 /* ============================================================
    BADGE / PILL
    ============================================================ */
@@ -592,22 +560,6 @@ select.form-input option {
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
   letter-spacing: 0.04em;
-}
-
-.badge-amber {
-  background: rgba(193, 127, 36, 0.15);
-  color: var(--color-amber-light);
-  border: 1px solid rgba(193, 127, 36, 0.3);
-}
-
-/* ============================================================
-   DIVISOR
-   ============================================================ */
-
-.divider {
-  height: 1px;
-  background: var(--color-border-subtle);
-  margin: var(--space-4) 0;
 }
 
 /* ============================================================
@@ -667,18 +619,8 @@ select.form-input option {
    UTILITÁRIOS
    ============================================================ */
 
-.text-amber   { color: var(--color-amber); }
 .text-success { color: var(--color-success-text); }
 .text-warning { color: var(--color-warning-text); }
-.text-danger  { color: var(--color-danger-text); }
-.text-muted   { color: var(--color-text-muted); }
-.text-right   { text-align: right; }
-.text-center  { text-align: center; }
-.text-mono    { font-family: var(--font-mono); }
-.text-sm      { font-size: var(--text-sm); }
-.text-xs      { font-size: var(--text-xs); }
-.font-bold    { font-weight: var(--font-bold); }
-.font-semibold { font-weight: var(--font-semibold); }
 .hidden       { display: none !important; }
 
 /* Colunas secundárias da tabela — ocultas em telas pequenas */

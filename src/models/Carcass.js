@@ -16,12 +16,4 @@ export class Carcass {
   get totalCost() {
     return this.weight * this.pricePerKg;
   }
-
-  toJSON() {
-    return {
-      weight:     this.weight,
-      pricePerKg: this.pricePerKg,
-      totalCost:  this.totalCost,
-    };
-  }
 }

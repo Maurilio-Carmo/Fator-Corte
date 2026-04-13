@@ -69,12 +69,6 @@
   letter-spacing: 0.02em;
 }
 
-.header-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-}
-
 .header-actions {
   position: relative;
   display: flex;
@@ -145,10 +139,6 @@
   gap: var(--space-2);
 }
 
-.section-title-icon {
-  font-size: var(--text-xl);
-}
-
 /* Grid dos cards de resumo */
 .summary-grid {
   display: grid;
@@ -185,12 +175,6 @@
   color: var(--color-danger-text);
 }
 
-.alert-bar.alert-warning {
-  background: var(--color-warning-bg);
-  border: 1px solid var(--color-warning-border);
-  color: var(--color-warning-text);
-}
-
 .alert-icon {
   font-size: var(--text-xl);
   flex-shrink: 0;
@@ -221,17 +205,6 @@
   padding: var(--space-2) var(--space-6);
   text-align: center;
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-.footer-inner {
-  max-width: 1600px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
@@ -283,10 +256,6 @@
 
   .header-actions {
     flex-shrink: 0;
-  }
-
-  .header-meta {
-    display: none;
   }
 
   .cut-row {
