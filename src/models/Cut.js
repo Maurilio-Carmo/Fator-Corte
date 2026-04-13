@@ -20,18 +20,4 @@ export class Cut {
     this.salePrice   = salePrice;
     this.isSubproduct = isSubproduct;
   }
-
-  get isValid() {
-    return this.weight > 0;
-  }
-
-  toJSON() {
-    return {
-      id:           this.id,
-      name:         this.name,
-      weight:       this.weight,
-      salePrice:    this.salePrice,
-      isSubproduct: this.isSubproduct,
-    };
-  }
 }
