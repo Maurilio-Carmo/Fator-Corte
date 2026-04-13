@@ -19,9 +19,17 @@ Aplicação web progressiva (PWA) para cálculo de rendimento e formação de pr
 
 A solução está publicada no GitHub Pages — sem instalação ou dependências.
 
-**[https://maurilio-carmo.github.io/Fator-Corte/](https://maurilio-carmo.github.io/Fator-Corte/)**
+**[Visualizar página do Fator de Corte](https://maurilio-carmo.github.io/Fator-Corte/)**
 
 Toda a operação é executada no front-end (client-side).
+
+---
+
+## ☕ Apoie o Projeto
+
+Se este app te ajudou a economizar tempo ou dinheiro, considere fazer uma doação!
+
+**[Apoiar / Fazer uma doação](https://maurilio-carmo.github.io/Coffee-Pay/)**
 
 ---
 
