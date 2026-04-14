@@ -59,6 +59,18 @@ async function bootstrap() {
   const cutsByType = await fetchJSON('data/cuts.json');
   const controller = new AppController(cutsByType);
   controller.init();
+
+  // Move os elementos position:fixed para o body, evitando que o stacking
+  // context criado pela animação (opacity/transform em #app) quebre o
+  // posicionamento do drawer e do overlay.
+  ['drawer-overlay', 'settings-panel'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) document.body.appendChild(el);
+  });
+
+  // Efeito suave de entrada após carregar tudo
+  requestAnimationFrame(() => app.classList.add('page-ready'));
+
   console.log('%c[App] Pronto ✓', 'color:#4caf50;font-weight:bold');
 }
 

@@ -214,6 +214,26 @@ input, select, textarea {
   color: var(--color-cream);
 }
 
+/* Animação de entrada da página */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#app {
+  opacity: 0;
+}
+
+.page-ready {
+  animation: fadeInUp 450ms ease-out both;
+}
+
 /* Scrollbar personalizada */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 
