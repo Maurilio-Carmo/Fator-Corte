@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Cabeçalho */
@@ -16,7 +17,7 @@
   box-shadow: var(--shadow-md);
   position: relative;
   max-width: 1600px;
-  width: 100%;
+  width: calc(100% - 2 * var(--space-6));
   margin: var(--space-3) auto 0;
   overflow: hidden;
 }
@@ -67,6 +68,7 @@
   color: var(--color-text-muted);
   font-weight: var(--font-normal);
   letter-spacing: 0.02em;
+  line-height: var(--leading-tight);
 }
 
 .header-actions {
@@ -82,7 +84,7 @@
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  padding: var(--space-8) 0;
+  padding: var(--space-8) var(--space-6);
   display: grid;
   grid-template-columns: 420px 1fr;
   grid-template-rows: auto 1fr;
@@ -198,6 +200,11 @@
   min-width: 0;
 }
 
+/* Trava scroll da página quando o drawer está aberto */
+body.drawer-open {
+  overflow: hidden;
+}
+
 /* Rodapé */
 .site-footer {
   background: var(--color-bg-surface);
@@ -233,6 +240,10 @@
 }
 
 @media (max-width: 768px) {
+  .site-header {
+    width: calc(100% - 2 * var(--space-4));
+  }
+
   .header-inner {
     padding: var(--space-3) var(--space-4);
     flex-wrap: nowrap;
@@ -247,8 +258,7 @@
     min-width: 0;
   }
 
-  .header-titles .app-title,
-  .header-titles .header-tagline {
+  .header-titles .app-title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -283,6 +293,10 @@
 }
 
 @media (max-width: 480px) {
+  .site-header {
+    width: calc(100% - 2 * var(--space-3));
+  }
+
   .main-content {
     padding: var(--space-4) var(--space-3);
     gap: var(--space-5);
