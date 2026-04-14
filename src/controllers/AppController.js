@@ -131,6 +131,7 @@ export class AppController {
       drawer.classList.add('open');
       overlay?.classList.add('open');
       btn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('drawer-open');
       closeBtn?.focus();
     };
 
@@ -138,6 +139,7 @@ export class AppController {
       drawer.classList.remove('open');
       overlay?.classList.remove('open');
       btn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('drawer-open');
       drawer.addEventListener('transitionend', () => drawer.setAttribute('inert', ''), { once: true });
       btn.focus();
     };
