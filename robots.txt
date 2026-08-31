@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://maurilio-carmo.github.io/Fator-Corte/sitemap.xml
