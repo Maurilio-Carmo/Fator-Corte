@@ -239,21 +239,13 @@ input, select, textarea {
   animation: fadeInUp 400ms var(--ease-out) both;
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-
-::-webkit-scrollbar-track {
-  background: var(--color-bg-surface);
+/* Scrollbar escondida globalmente — scroll continua funcionando, só a barra some */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legado */
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber);
-}
+::-webkit-scrollbar { width: 0; height: 0; }
 
 /* Respeita a preferência do usuário por menos movimento — some animação
    e transição do site vira instantânea, mantendo o estado final. */
