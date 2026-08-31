@@ -22,13 +22,18 @@ const ASSETS = [
   './css/layout.css',
   './css/components.css',
   './css/theme.css',
+  './css/skeleton.css',
   './src/app.js',
   './src/controllers/AppController.js',
   './src/models/Carcass.js',
   './src/models/Cut.js',
   './src/services/CalculationService.js',
+  './src/services/PwaManager.js',
+  './src/services/SettingsService.js',
   './src/views/AppView.js',
+  './src/views/CustomSelect.js',
   './src/utils/formatters.js',
+  './src/utils/icons.js',
   './components/header.html',
   './components/carcass-form.html',
   './components/cuts-list.html',
@@ -37,6 +42,8 @@ const ASSETS = [
   './components/footer.html',
   './data/cuts.json',
   './icons/icon.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
 ];
 
 /* ---- Install: pré-cacheia todos os assets ---- */
