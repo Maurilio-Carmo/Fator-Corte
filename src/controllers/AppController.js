@@ -1,30 +1,39 @@
 // src/controllers/AppController.js
 // Controlador MVC: gerencia o estado da aplicação e coordena modelo e visão.
+// Não toca o DOM nem localStorage diretamente — isso é responsabilidade de
+// AppView e SettingsService, respectivamente.
 import { Carcass }            from '../models/Carcass.js';
 import { Cut }                from '../models/Cut.js';
 import { CalculationService } from '../services/CalculationService.js';
+import { SettingsService }    from '../services/SettingsService.js';
 import { AppView }            from '../views/AppView.js';
 
 export class AppController {
-  constructor(cutsByType = {}) {
+  /**
+   * @param {Object} [cutsByType]
+   * @param {import('../services/PwaManager.js').PwaManager} [pwaManager]
+   */
+  constructor(cutsByType = {}, pwaManager = null) {
     this._cutsByType   = cutsByType;
+    this._pwaManager   = pwaManager;
     this._carcass      = new Carcass({ weight: 0, pricePerKg: 0 });
     this._cuts         = [];
     this._targetMargin = 0.30;
-    this._settings     = this._loadSettings();
+    this._settings     = SettingsService.load();
     this._view         = new AppView(this);
   }
 
   init() {
-    this._bindCarcassForm();
-    this._syncInputMode();
+    this._view.bindEvents();
+    this._view.syncInputMode(this._settings.inputMode);
     this._renderAll();
+    this._bindPwaManager();
   }
 
   get settings() { return this._settings; }
 
   /* ============================================================
-     API PÚBLICA
+     API PÚBLICA — CARCAÇA E CORTES
      ============================================================ */
 
   updateCarcass(field, value) {
@@ -61,282 +70,41 @@ export class AppController {
     this._renderAll();
   }
 
-  /* ============================================================
-     VINCULAÇÃO DO FORMULÁRIO
-     ============================================================ */
-
-  _bindCarcassForm() {
-    const typeSelect  = document.getElementById('carcass-type');
-    const weightInput = document.getElementById('carcass-weight');
-    const priceInput  = document.getElementById('carcass-price');
-    const marginInput = document.getElementById('target-margin');
-    const addCutBtn   = document.getElementById('add-cut-btn');
-
-    typeSelect?.addEventListener('change', (e) => {
-      this.updateCarcass('type', e.target.value);
-      this._loadDefaultCuts(e.target.value);
-    });
-
-    weightInput?.addEventListener('input', (e) => {
-      this.updateCarcass('weight', parseFloat(e.target.value) || 0);
-    });
-
-    priceInput?.addEventListener('input', (e) => {
-      this.updateCarcass('pricePerKg', parseFloat(e.target.value) || 0);
-    });
-
-    if (marginInput) {
-      marginInput.addEventListener('input', (e) => {
-        let raw = e.target.value;
-
-        // Limita a 2 casas decimais
-        const dot = raw.indexOf('.');
-        if (dot !== -1 && raw.length - dot > 3) {
-          raw = raw.slice(0, dot + 3);
-          e.target.value = raw;
-        }
-
-        // Clamp ao máximo 99.99
-        const pct = parseFloat(raw);
-        if (!isNaN(pct) && pct > 99.99) e.target.value = '99.99';
-
-        const final = parseFloat(e.target.value);
-        this._targetMargin = (final >= 0.01 && final <= 99.99) ? final / 100 : 0.30;
-        this._recalculate();
-      });
-    }
-
-    addCutBtn?.addEventListener('click', () => this.addCut());
-
-    document.getElementById('toggle-all-subproduct-btn')
-      ?.addEventListener('click', () => this.toggleAllSubproduct());
-
-    this._bindSettingsPanel();
+  setTargetMargin(percent) {
+    this._targetMargin = (percent >= 0.01 && percent <= 99.99) ? percent / 100 : 0.30;
+    this._recalculate();
   }
 
-  _bindSettingsPanel() {
-    const btn      = document.getElementById('settings-btn');
-    const drawer   = document.getElementById('settings-panel');
-    const overlay  = document.getElementById('drawer-overlay');
-    const closeBtn = document.getElementById('drawer-close-btn');
-    if (!btn || !drawer) return;
-
-    // Sincroniza os botões com as configurações persistidas
-    drawer.querySelectorAll('.toggle-opt').forEach((opt) => {
-      opt.classList.toggle('active', this._settings[opt.dataset.setting] === opt.dataset.value);
-    });
-
-    const openDrawer = () => {
-      drawer.removeAttribute('inert');
-      drawer.classList.add('open');
-      overlay?.classList.add('open');
-      btn.setAttribute('aria-expanded', 'true');
-      document.body.classList.add('drawer-open');
-      closeBtn?.focus();
-    };
-
-    const closeDrawer = () => {
-      drawer.classList.remove('open');
-      overlay?.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-      document.body.classList.remove('drawer-open');
-      drawer.addEventListener('transitionend', () => drawer.setAttribute('inert', ''), { once: true });
-      btn.focus();
-    };
-
-    btn.addEventListener('click', openDrawer);
-    closeBtn?.addEventListener('click', closeDrawer);
-    overlay?.addEventListener('click', closeDrawer);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
-    });
-
-    // Alterna configurações
-    drawer.addEventListener('click', (e) => {
-      const opt = e.target.closest('.toggle-opt');
-      if (!opt) return;
-      const { setting, value } = opt.dataset;
-      if (!setting || !value) return;
-      opt.closest('.toggle-group')?.querySelectorAll('.toggle-opt').forEach((o) => {
-        o.classList.toggle('active', o === opt);
-      });
-      this._settings[setting] = value;
-      this._saveSettings();
-      if (setting === 'inputMode') this._syncInputMode();
-      this._renderAll();
-    });
-
-    this._bindPwaFooter();
-  }
-
-  _bindPwaFooter() {
-    const footer      = document.getElementById('drawer-footer');
-    const settingsBtn = document.getElementById('settings-btn');
-    if (!footer) return;
-
-    const VERSION     = window.__pwa?.version ?? '';
-    const isInstalled = window.matchMedia('(display-mode: standalone)').matches
-      || navigator.standalone === true;
-
-    const clear = () => { while (footer.firstChild) footer.removeChild(footer.firstChild); };
-
-    // Cria/remove bolinha de notificação com estilos inline para funcionar
-    // mesmo com o CSS antigo em memória (antes do reload de atualização).
-    const setUpdateDot = (show) => {
-      if (!settingsBtn) return;
-      const existing = settingsBtn.querySelector('.update-dot');
-      if (show && !existing) {
-        const dot = document.createElement('span');
-        dot.className = 'update-dot';
-        dot.setAttribute('aria-hidden', 'true');
-        Object.assign(dot.style, {
-          position: 'absolute', top: '7px', left: '7px',
-          width: '10px', height: '10px', borderRadius: '50%',
-          background: '#f5c542', pointerEvents: 'none', zIndex: '1',
-        });
-        settingsBtn.style.position = 'relative';
-        settingsBtn.appendChild(dot);
-      } else if (!show) {
-        existing?.remove();
-      }
-    };
-
-    const renderVersionInfo = (hasUpdate = false) => {
-      clear();
-      setUpdateDot(hasUpdate);
-
-      const wrap = document.createElement('div');
-      wrap.className = 'pwa-info';
-
-      if (VERSION) {
-        const ver = document.createElement('span');
-        ver.className   = 'pwa-version';
-        ver.textContent = `Versão ${VERSION}`;
-        wrap.appendChild(ver);
-      }
-
-      if (hasUpdate) {
-        const btn = document.createElement('button');
-        btn.type        = 'button';
-        btn.className   = 'btn btn-primary btn-block';
-        btn.textContent = 'Atualizar aplicativo';
-        btn.addEventListener('click', () => {
-          const reg = window.__pwa?.swRegistration;
-          if (reg?.waiting) {
-            // Envia sinal ao SW em espera; ele ativará e controllerchange recarregará
-            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-          } else {
-            window.location.reload();
-          }
-        });
-        wrap.appendChild(btn);
-      }
-
-      footer.appendChild(wrap);
-    };
-
-    const renderInstallButton = () => {
-      clear();
-      const wrap = document.createElement('div');
-      wrap.className = 'pwa-info';
-      const btn = document.createElement('button');
-      btn.type        = 'button';
-      btn.className   = 'btn btn-primary btn-block';
-      btn.textContent = 'Instalar aplicativo';
-      btn.addEventListener('click', async () => {
-        const prompt = window.__pwa?.installPrompt;
-        if (!prompt) return;
-        prompt.prompt();
-        const { outcome } = await prompt.userChoice;
-        if (outcome === 'accepted') {
-          if (window.__pwa) window.__pwa.installPrompt = null;
-          renderVersionInfo(false);
-        }
-      });
-      wrap.appendChild(btn);
-      footer.appendChild(wrap);
-    };
-
-    // Decide o estado correto e re-renderiza ao receber eventos.
-    // Verifica window.__pwa diretamente para cobrir o caso em que
-    // beforeinstallprompt ou pwa-update-ready dispararam antes deste
-    // listener ser registrado (race condition entre app.js e bootstrap).
-    const refresh = () => {
-      if (window.__pwa?.hasUpdate)                     return renderVersionInfo(true);
-      if (!isInstalled && window.__pwa?.installPrompt) return renderInstallButton();
-      renderVersionInfo(false);
-    };
-
-    window.addEventListener('pwa-update-ready', () => {
-      if (window.__pwa) window.__pwa.hasUpdate = true;
-      refresh();
-    }, { once: true });
-
-    window.addEventListener('pwa-installable', () => refresh(), { once: true });
-
-    // setTimeout garante que o refresh rode após todos os eventos pendentes
-    // do ciclo de inicialização atual, evitando a race condition onde
-    // beforeinstallprompt chega antes dos listeners serem registrados.
-    setTimeout(refresh, 0);
-  }
-
-  /* ============================================================
-     PERSISTÊNCIA DE CONFIGURAÇÕES
-     ============================================================ */
-
-  static _SETTINGS_KEY = 'fc_settings';
-
-  _loadSettings() {
-    const defaults = { priceMode: 'margin', costMode: 'scarcity', inputMode: 'price' };
-    try {
-      const saved = JSON.parse(localStorage.getItem(AppController._SETTINGS_KEY));
-      if (saved && typeof saved === 'object') {
-        return {
-          priceMode:  saved.priceMode === 'markup'   ? 'markup'   : 'margin',
-          costMode:   saved.costMode  === 'equal'    ? 'equal'    : 'scarcity',
-          inputMode:  saved.inputMode === 'per_cut'  ? 'per_cut'  : 'price',
-        };
-      }
-    } catch { /* ignora erros de parse */ }
-    return defaults;
-  }
-
-  _syncInputMode() {
-    const marginInput = document.getElementById('target-margin');
-    const formGroup   = marginInput?.closest('.form-group');
-    const isPercent   = this._settings.inputMode !== 'price';
-    if (marginInput)  marginInput.disabled = isPercent;
-    if (formGroup)    formGroup.classList.toggle('field-disabled', isPercent);
-  }
-
-  _saveSettings() {
-    try {
-      localStorage.setItem(AppController._SETTINGS_KEY, JSON.stringify(this._settings));
-    } catch { /* ignora erros de quota */ }
-  }
-
-  /* ============================================================
-     CARREGAMENTO DE CORTES PADRÃO
-     ============================================================ */
-
-  _loadDefaultCuts(type) {
+  loadDefaultCutsForType(type) {
     const names = this._cutsByType[type] ?? [];
     this._cuts  = names.map((name) => new Cut({ name }));
-    this._updateDatalist(type);
+    this._view.updateCutsDatalist(names);
     this._renderAll();
   }
 
-  _updateDatalist(type) {
-    const datalist = document.getElementById('cuts-suggestions');
-    if (!datalist) return;
-    const names = this._cutsByType[type] ?? [];
-    datalist.replaceChildren(
-      ...names.map((name) => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        return opt;
-      })
-    );
+  /* ============================================================
+     API PÚBLICA — CONFIGURAÇÕES
+     ============================================================ */
+
+  updateSetting(setting, value) {
+    this._settings[setting] = value;
+    SettingsService.save(this._settings);
+    if (setting === 'inputMode') this._view.syncInputMode(this._settings.inputMode);
+    this._renderAll();
+  }
+
+  /* ============================================================
+     PWA (instalação / atualização)
+     ============================================================ */
+
+  _bindPwaManager() {
+    if (!this._pwaManager) return;
+    const render = () => this._view.renderPwaFooter(this._pwaManager.state, {
+      onInstall: () => this._pwaManager.promptInstall(),
+      onUpdate:  () => this._pwaManager.applyUpdate(),
+    });
+    this._pwaManager.addEventListener('change', render);
+    render();
   }
 
   /* ============================================================

@@ -1,5 +1,6 @@
 // src/views/AppView.js
-// Camada de visão MVC: toda a manipulação do DOM e renderização da UI.
+// Camada de visão MVC: toda a manipulação do DOM, vinculação de eventos e
+// renderização da UI vivem aqui — o Controller nunca toca o DOM diretamente.
 // Valores fornecidos pelo usuário são sempre inseridos via textContent (nunca innerHTML) para prevenir XSS.
 import {
   formatCurrency,
@@ -8,6 +9,8 @@ import {
   formatWeight,
 } from '../utils/formatters.js';
 import { CalculationService } from '../services/CalculationService.js';
+import { CustomSelect }       from './CustomSelect.js';
+import { ICON_CLOSE, ICON_MEAT } from '../utils/icons.js';
 
 export class AppView {
   constructor(controller) {
@@ -18,6 +21,7 @@ export class AppView {
     this._tableEmptyRowEl   = document.getElementById('table-empty-row');
     this._wasteAlertEl      = document.getElementById('waste-alert');
     this._wasteAlertMsgEl   = document.getElementById('waste-alert-message');
+    this._wasteAlertActive  = false;
 
     this._sumTotalCutsEl    = document.getElementById('sum-total-cuts');
     this._sumDescarteEl     = document.getElementById('sum-descarte');
@@ -28,6 +32,212 @@ export class AppView {
     this._sumResultLiqEl    = document.getElementById('sum-result-liq');
     this._sumMargemMediaEl  = document.getElementById('sum-margem-media');
     this._sumMargemStatusEl = document.getElementById('sum-margem-status');
+
+    this._typeSelectEl   = new CustomSelect(document.getElementById('carcass-type'), {
+      onChange: (value) => {
+        this._controller.updateCarcass('type', value);
+        this._controller.loadDefaultCutsForType(value);
+      },
+    });
+    this._weightInputEl  = document.getElementById('carcass-weight');
+    this._priceInputEl   = document.getElementById('carcass-price');
+    this._marginInputEl  = document.getElementById('target-margin');
+    this._addCutBtnEl    = document.getElementById('add-cut-btn');
+    this._toggleAllBtnEl = document.getElementById('toggle-all-subproduct-btn');
+
+    this._settingsBtnEl    = document.getElementById('settings-btn');
+    this._drawerEl         = document.getElementById('settings-panel');
+    this._drawerOverlayEl  = document.getElementById('drawer-overlay');
+    this._drawerCloseBtnEl = document.getElementById('drawer-close-btn');
+    this._drawerFooterEl   = document.getElementById('drawer-footer');
+  }
+
+  /* ============================================================
+     VINCULAÇÃO DE EVENTOS
+     ============================================================ */
+
+  bindEvents() {
+    this._bindCarcassForm();
+    this._bindSettingsPanel();
+  }
+
+  _bindCarcassForm() {
+    this._weightInputEl?.addEventListener('input', (e) => {
+      this._controller.updateCarcass('weight', parseFloat(e.target.value) || 0);
+    });
+
+    this._priceInputEl?.addEventListener('input', (e) => {
+      this._controller.updateCarcass('pricePerKg', parseFloat(e.target.value) || 0);
+    });
+
+    this._marginInputEl?.addEventListener('input', (e) => {
+      let raw = e.target.value;
+
+      // Limita a 2 casas decimais
+      const dot = raw.indexOf('.');
+      if (dot !== -1 && raw.length - dot > 3) {
+        raw = raw.slice(0, dot + 3);
+        e.target.value = raw;
+      }
+
+      // Clamp ao máximo 99.99
+      const pct = parseFloat(raw);
+      if (!isNaN(pct) && pct > 99.99) e.target.value = '99.99';
+
+      this._controller.setTargetMargin(parseFloat(e.target.value));
+    });
+
+    this._addCutBtnEl?.addEventListener('click', () => this._controller.addCut());
+    this._toggleAllBtnEl?.addEventListener('click', () => this._controller.toggleAllSubproduct());
+  }
+
+  _bindSettingsPanel() {
+    const btn      = this._settingsBtnEl;
+    const drawer   = this._drawerEl;
+    const overlay  = this._drawerOverlayEl;
+    const closeBtn = this._drawerCloseBtnEl;
+    if (!btn || !drawer) return;
+
+    // Sincroniza os botões com as configurações persistidas
+    drawer.querySelectorAll('.toggle-opt').forEach((opt) => {
+      opt.classList.toggle('active', this._controller.settings[opt.dataset.setting] === opt.dataset.value);
+    });
+
+    const openDrawer = () => {
+      drawer.removeAttribute('inert');
+      drawer.classList.add('open');
+      overlay?.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('drawer-open');
+      closeBtn?.focus();
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.remove('open');
+      overlay?.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('drawer-open');
+      drawer.addEventListener('transitionend', () => drawer.setAttribute('inert', ''), { once: true });
+      btn.focus();
+    };
+
+    btn.addEventListener('click', openDrawer);
+    closeBtn?.addEventListener('click', closeDrawer);
+    overlay?.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+    });
+
+    // Alterna configurações
+    drawer.addEventListener('click', (e) => {
+      const opt = e.target.closest('.toggle-opt');
+      if (!opt) return;
+      const { setting, value } = opt.dataset;
+      if (!setting || !value) return;
+      opt.closest('.toggle-group')?.querySelectorAll('.toggle-opt').forEach((o) => {
+        o.classList.toggle('active', o === opt);
+      });
+      this._controller.updateSetting(setting, value);
+    });
+  }
+
+  /* ============================================================
+     SINCRONIZAÇÃO DE CONFIGURAÇÕES NO FORMULÁRIO
+     ============================================================ */
+
+  syncInputMode(inputMode) {
+    const formGroup = this._marginInputEl?.closest('.form-group');
+    const isPercent = inputMode !== 'price';
+    if (this._marginInputEl) this._marginInputEl.disabled = isPercent;
+    if (formGroup) formGroup.classList.toggle('field-disabled', isPercent);
+  }
+
+  updateCutsDatalist(names) {
+    const datalist = document.getElementById('cuts-suggestions');
+    if (!datalist) return;
+    datalist.replaceChildren(
+      ...names.map((name) => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        return opt;
+      })
+    );
+  }
+
+  /* ============================================================
+     RODAPÉ PWA (instalação / atualização)
+     ============================================================ */
+
+  renderPwaFooter(state, { onInstall, onUpdate } = {}) {
+    const footer = this._drawerFooterEl;
+    if (!footer) return;
+
+    const clear = () => { while (footer.firstChild) footer.removeChild(footer.firstChild); };
+
+    // Cria/remove bolinha de notificação com estilos inline para funcionar
+    // mesmo com o CSS antigo em memória (antes do reload de atualização).
+    const setUpdateDot = (show) => {
+      const settingsBtn = this._settingsBtnEl;
+      if (!settingsBtn) return;
+      const existing = settingsBtn.querySelector('.update-dot');
+      if (show && !existing) {
+        const dot = document.createElement('span');
+        dot.className = 'update-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        Object.assign(dot.style, {
+          position: 'absolute', top: '7px', left: '7px',
+          width: '10px', height: '10px', borderRadius: '50%',
+          background: '#f5c542', pointerEvents: 'none', zIndex: '1',
+        });
+        settingsBtn.style.position = 'relative';
+        settingsBtn.appendChild(dot);
+      } else if (!show) {
+        existing?.remove();
+      }
+    };
+
+    const renderVersionInfo = (hasUpdate) => {
+      clear();
+      setUpdateDot(hasUpdate);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'pwa-info';
+
+      if (state.version) {
+        const ver = document.createElement('span');
+        ver.className   = 'pwa-version';
+        ver.textContent = `Versão ${state.version}`;
+        wrap.appendChild(ver);
+      }
+
+      if (hasUpdate) {
+        const btn = document.createElement('button');
+        btn.type        = 'button';
+        btn.className   = 'btn btn-primary btn-block';
+        btn.textContent = 'Atualizar aplicativo';
+        btn.addEventListener('click', () => onUpdate?.());
+        wrap.appendChild(btn);
+      }
+
+      footer.appendChild(wrap);
+    };
+
+    const renderInstallButton = () => {
+      clear();
+      const wrap = document.createElement('div');
+      wrap.className = 'pwa-info';
+      const btn = document.createElement('button');
+      btn.type        = 'button';
+      btn.className   = 'btn btn-primary btn-block';
+      btn.textContent = 'Instalar aplicativo';
+      btn.addEventListener('click', () => onInstall?.());
+      wrap.appendChild(btn);
+      footer.appendChild(wrap);
+    };
+
+    if (state.hasUpdate)                                return renderVersionInfo(true);
+    if (!state.isInstalled && state.installPrompt)       return renderInstallButton();
+    renderVersionInfo(false);
   }
 
   /* ============================================================
@@ -46,11 +256,10 @@ export class AppView {
       priceLabelEl.textContent = inputMode === 'per_cut' ? '%' : 'Preço';
     }
 
-    const toggleAllBtn = document.getElementById('toggle-all-subproduct-btn');
-    if (toggleAllBtn) {
+    if (this._toggleAllBtnEl) {
       const allAre = cuts.length > 0 && cuts.every((c) => c.isSubproduct);
-      toggleAllBtn.classList.toggle('active', allAre);
-      toggleAllBtn.setAttribute('aria-pressed', String(allAre));
+      this._toggleAllBtnEl.classList.toggle('active', allAre);
+      this._toggleAllBtnEl.setAttribute('aria-pressed', String(allAre));
     }
 
     if (cuts.length === 0) {
@@ -127,12 +336,11 @@ export class AppView {
     removeBtn.className = 'btn btn-danger btn-icon';
     removeBtn.setAttribute('aria-label', 'Remover corte');
     removeBtn.setAttribute('data-tooltip', 'Remover');
-    removeBtn.textContent = '✕';
+    removeBtn.innerHTML = ICON_CLOSE;
     removeBtn.addEventListener('click', () => {
-      row.style.opacity    = '0';
-      row.style.transform  = 'translateX(-8px)';
-      row.style.transition = 'opacity 150ms ease, transform 150ms ease';
-      setTimeout(() => this._controller.removeCut(cut.id), 150);
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      row.classList.add('cut-row-exit');
+      setTimeout(() => this._controller.removeCut(cut.id), reducedMotion ? 0 : 180);
     });
 
     row.appendChild(nameInput);
@@ -151,8 +359,8 @@ export class AppView {
         emptyEl.className = 'cuts-empty-state empty-state';
         emptyEl.setAttribute('role', 'listitem');
         const icon = document.createElement('span');
-        icon.className   = 'empty-state-icon';
-        icon.textContent = '🥩';
+        icon.className = 'empty-state-icon';
+        icon.innerHTML  = ICON_MEAT;
         const text = document.createElement('p');
         text.className   = 'empty-state-text';
         text.textContent = 'Adicione cortes usando o botão abaixo';
@@ -300,12 +508,18 @@ export class AppView {
         this._wasteAlertMsgEl.textContent =
           `Quebra atual: ${formatPercent(wastePercent)} — acima do limite recomendado de 22%. Revise os pesos dos cortes.`;
       }
-      // Force reflow para reiniciar a animação de shake
-      this._wasteAlertEl.classList.remove('animate');
-      void this._wasteAlertEl.offsetWidth;
-      this._wasteAlertEl.classList.add('animate');
+      // Só dispara a entrada/shake na transição inativo→ativo — recalcula a
+      // cada tecla digitada, então repetir a animação em todo recálculo
+      // faria a tela chacoalhar enquanto o usuário digita.
+      if (!this._wasteAlertActive) {
+        this._wasteAlertEl.classList.remove('animate');
+        void this._wasteAlertEl.offsetWidth;
+        this._wasteAlertEl.classList.add('animate');
+      }
+      this._wasteAlertActive = true;
     } else {
       this._wasteAlertEl.classList.add('hidden');
+      this._wasteAlertActive = false;
     }
   }
 
