@@ -1,7 +1,7 @@
 <!-- components/carcass-form.html -->
 <section class="card section" aria-labelledby="carcass-form-title">
   <div class="card-header">
-    <span class="card-icon" aria-hidden="true">⚖️</span>
+    <svg class="icon card-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="21"/><line x1="5" y1="7" x2="19" y2="7"/><path d="M5 7 2 13a3 3 0 0 0 6 0L5 7Z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0l-3-6Z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
     <h2 class="card-title" id="carcass-form-title">Dados da Carcaça</h2>
   </div>
 
@@ -9,16 +9,35 @@
     <div class="form-row">
 
       <div class="form-group">
-        <label class="form-label form-label-required" for="carcass-type">
+        <span class="form-label form-label-required" id="carcass-type-label">
           Tipo de Carcaça
-        </label>
-        <select id="carcass-type" class="form-input" aria-describedby="carcass-type-hint">
-          <option value="" disabled selected>Selecione</option>
-          <option value="traseiro">Traseiro</option>
-          <option value="dianteiro">Dianteiro</option>
-          <option value="ponta-de-agulha">Ponta de Agulha</option>
-          <option value="suinos">Suínos</option>
-        </select>
+        </span>
+        <div id="carcass-type" class="custom-select">
+          <button
+            type="button"
+            class="custom-select-trigger form-input"
+            role="combobox"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="carcass-type-listbox"
+            aria-labelledby="carcass-type-label"
+            aria-describedby="carcass-type-hint"
+          >
+            <span class="custom-select-value" data-placeholder="Selecione" data-empty="true">Selecione</span>
+          </button>
+          <ul
+            class="custom-select-listbox"
+            id="carcass-type-listbox"
+            role="listbox"
+            aria-labelledby="carcass-type-label"
+            inert
+          >
+            <li class="custom-select-option" role="option" id="carcass-type-opt-traseiro" data-value="traseiro" aria-selected="false">Traseiro</li>
+            <li class="custom-select-option" role="option" id="carcass-type-opt-dianteiro" data-value="dianteiro" aria-selected="false">Dianteiro</li>
+            <li class="custom-select-option" role="option" id="carcass-type-opt-ponta-de-agulha" data-value="ponta-de-agulha" aria-selected="false">Ponta de Agulha</li>
+            <li class="custom-select-option" role="option" id="carcass-type-opt-suinos" data-value="suinos" aria-selected="false">Suínos</li>
+          </ul>
+        </div>
         <span class="form-hint" id="carcass-type-hint">Tipo de corte da carcaça</span>
       </div>
 

@@ -1,0 +1,98 @@
+/* css/skeleton.css */
+/* Skeleton de carregamento inicial + barra de progresso, exibidos enquanto
+   os componentes HTML e os dados de cortes são buscados. */
+
+#boot-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--color-amber-dark), var(--color-amber-bright));
+  z-index: var(--z-toast);
+  transition: transform 200ms var(--ease-out), opacity 200ms var(--ease-out);
+}
+
+#boot-progress.done {
+  opacity: 0;
+}
+
+.app-skeleton {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  width: calc(100% - 2 * var(--space-6));
+  margin: var(--space-3) auto 0;
+  padding-bottom: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.app-skeleton.skeleton-exit {
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+  pointer-events: none;
+}
+
+.skeleton-block {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    100deg,
+    var(--color-bg-card) 30%,
+    var(--color-bg-elevated) 50%,
+    var(--color-bg-card) 70%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s var(--ease-in-out) infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.skeleton-header {
+  height: 72px;
+  border-radius: var(--radius-lg);
+}
+
+.skeleton-main {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.skeleton-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.skeleton-card-tall { height: 220px; }
+
+.skeleton-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.skeleton-summary-grid .skeleton-block { height: 128px; }
+
+.skeleton-table { height: 260px; }
+
+@media (max-width: 1280px) {
+  .skeleton-summary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 1024px) {
+  .skeleton-main { grid-template-columns: 1fr; }
+  .skeleton-card-tall { height: 180px; }
+}
+
+@media (max-width: 480px) {
+  .app-skeleton { width: calc(100% - 2 * var(--space-3)); }
+}

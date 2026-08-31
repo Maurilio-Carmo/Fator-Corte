@@ -2,6 +2,23 @@
 /* Cards, tabela, botões, formulários e utilitários. */
 
 /* ============================================================
+   ÍCONES SVG (substituem emojis — herdam cor/tamanho via currentColor/em)
+   ============================================================ */
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================================
    CARDS
    ============================================================ */
 
@@ -241,6 +258,89 @@ select.form-input option {
 .input-group:focus-within .input-prefix,
 .input-group:focus-within .input-suffix {
   border-color: var(--color-amber);
+}
+
+/* ============================================================
+   SELECT CUSTOM (combobox — WAI-ARIA select-only pattern)
+   ============================================================ */
+
+.custom-select {
+  position: relative;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  text-align: left;
+  cursor: pointer;
+}
+
+.custom-select-trigger::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform var(--transition-fast);
+}
+
+.custom-select-trigger[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.custom-select-value[data-empty="true"] {
+  color: var(--color-text-disabled);
+}
+
+.custom-select-listbox {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay);
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  transform-origin: top center;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+
+.custom-select-listbox.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.custom-select-option {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background 120ms var(--ease-out), color 120ms var(--ease-out);
+}
+
+.custom-select-option.highlighted {
+  background: var(--color-bg-hover);
+}
+
+.custom-select-option[aria-selected="true"] {
+  color: var(--color-amber-bright);
+  font-weight: var(--font-semibold);
 }
 
 /* Linha de formulário com 2 colunas iguais */
@@ -646,25 +746,21 @@ select.form-input option {
   font-size: var(--text-xl, 1.25rem);
   width: 44px;
   height: 44px;
-  transition: transform 200ms ease;
+  transition: transform var(--transition-normal);
 }
 
 .settings-btn[aria-expanded="true"] {
   transform: rotate(90deg);
 }
 
-.settings-btn::before {
-  content: '☰';
-}
-
-.settings-btn[aria-expanded="true"]::before {
-  content: '✕';
-}
-
 /* Botão de settings precisa de position relative para a bolinha de notificação */
 .settings-btn {
   position: relative;
 }
+
+.settings-btn .icon-close { display: none; }
+.settings-btn[aria-expanded="true"] .icon-menu  { display: none; }
+.settings-btn[aria-expanded="true"] .icon-close { display: inline-block; }
 
 /* Overlay escurecido atrás do drawer */
 .drawer-overlay {
@@ -739,6 +835,7 @@ select.form-input option {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  animation: fade-in-slide 220ms var(--ease-out) forwards;
 }
 
 .pwa-version {
@@ -778,7 +875,7 @@ select.form-input option {
   font-weight: var(--font-medium);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background 120ms var(--ease-out), color 120ms var(--ease-out);
 }
 
 .toggle-opt:not(:last-child) {

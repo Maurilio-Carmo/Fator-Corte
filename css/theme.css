@@ -44,38 +44,30 @@ body::before {
   opacity: 1;
 }
 
-/* Pulso âmbar no botão de adicionar corte */
-@keyframes amber-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(193,127,36,0.4); }
-  70%  { box-shadow: 0 0 0 8px rgba(193,127,36,0); }
-  100% { box-shadow: 0 0 0 0 rgba(193,127,36,0); }
-}
-
-.btn-add-cut {
-  animation: amber-pulse 2.5s infinite;
-}
-
-.btn-add-cut:hover {
-  animation: none;
-}
-
 @media (max-width: 768px) {
   .btn-add-cut {
-    animation: none; /* animação contínua interfere com touch events */
     padding: var(--space-3) var(--space-5);
     font-size: var(--text-sm);
     min-height: 44px; /* área mínima de toque recomendada */
   }
 }
 
-/* Animação de entrada dos cortes */
+/* Animação de entrada dos cortes (add-cut é ocasional — merece um enter sutil) */
 @keyframes fade-in-slide {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
 }
 
 .cut-row-animated {
-  animation: fade-in-slide 200ms ease forwards;
+  animation: fade-in-slide 220ms var(--ease-out) forwards;
+}
+
+/* Saída de um corte removido — mais sutil que a entrada, foco já migrou */
+.cut-row-exit {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+  pointer-events: none;
 }
 
 /* Destaque da linha da tabela no hover */
@@ -127,7 +119,13 @@ body::before {
 .status-dot.yellow { background: var(--color-warning-text); box-shadow: 0 0 6px var(--color-warning-text); }
 .status-dot.red    { background: var(--color-danger-text);  box-shadow: 0 0 6px var(--color-danger-text);  }
 
-/* Animação de alerta (shake) */
+/* Entrada + chacoalhada do alerta — dispara só na transição p/ ativo,
+   nunca a cada recálculo (evitar animar em alta frequência ao digitar). */
+@keyframes alert-enter {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes alert-shake {
   0%, 100% { transform: translateX(0); }
   25%       { transform: translateX(-4px); }
@@ -135,7 +133,9 @@ body::before {
 }
 
 .alert-bar.alert-danger.animate {
-  animation: alert-shake 0.4s ease;
+  animation:
+    alert-enter 200ms var(--ease-out),
+    alert-shake 350ms var(--ease-in-out) 200ms;
 }
 
 /* Barra de percentual de quebra */

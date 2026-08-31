@@ -110,10 +110,15 @@
   --leading-normal:  1.5;
   --leading-relaxed: 1.625;
 
+  /* Easings customizados — curvas nativas (ease/ease-in-out) são fracas demais */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-in:     cubic-bezier(0.55, 0, 1, 0.45);
+
   /* Transições */
-  --transition-fast:   150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow:   400ms ease;
+  --transition-fast:   150ms var(--ease-out);
+  --transition-normal: 250ms var(--ease-out);
+  --transition-slow:   400ms var(--ease-out);
 
   /* Camadas (z-index) */
   --z-base:    0;
@@ -231,7 +236,7 @@ input, select, textarea {
 }
 
 .page-ready {
-  animation: fadeInUp 450ms ease-out both;
+  animation: fadeInUp 400ms var(--ease-out) both;
 }
 
 /* Scrollbar personalizada */
@@ -248,4 +253,15 @@ input, select, textarea {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-amber);
+}
+
+/* Respeita a preferência do usuário por menos movimento — some animação
+   e transição do site vira instantânea, mantendo o estado final. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
