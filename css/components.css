@@ -7,13 +7,13 @@
 
 .icon {
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
+  width: 1.3em;
+  height: 1.3em;
+  vertical-align: -0.2em;
   flex-shrink: 0;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -100,8 +100,8 @@
 }
 
 .summary-card-icon {
-  font-size: var(--text-xl);
-  opacity: 0.7;
+  font-size: var(--text-2xl);
+  opacity: 0.8;
 }
 
 .summary-card-value {
